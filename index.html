@@ -470,14 +470,43 @@
       return encodeURIComponent(lines.join('\n'));
     }
 
-    function openWhatsApp(text){
-      const phone = normalizeDigits(WHATSAPP_PHONE);
-      if(!phone || phone.length < 10){
-        alert('Número do WhatsApp inválido.');
-        return;
-      }
-      window.open(`https://wa.me/${phone}?text=${text}`,'_blank');
-    }
+    async function openWhatsApp(){
+  if(state.cart.length === 0){
+    alert('Adicione pelo menos 1 item no carrinho.');
+    return;
+  }
+
+  const order = {
+    number: Date.now(),
+    name: "",        // depois a gente coloca formulário
+    phone: "",
+    address: "",
+    payment: "",
+    note: document.getElementById('noteText').value || "",
+    items: state.cart.map(i => ({
+      name: i.name,
+      qty: i.qty,
+      price: i.price
+    }))
+  };
+
+  // 👉 envia para o servidor (impressão)
+  try{
+    await fetch(`${SERVER_URL}/order`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order)
+    });
+  }catch(err){
+    alert("Erro ao enviar para a impressora");
+  }
+
+  // 👉 continua abrindo o WhatsApp normalmente
+  const phone = String(WHATSAPP_PHONE||'').replace(/\D+/g,'');
+  const text = buildMessage();
+  window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+}
+
 
     function send(){
       // ✅ segurança extra: impede enviar vazio mesmo se mexerem no HTML
