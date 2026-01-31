@@ -478,7 +478,7 @@
 
   const order = {
     number: Date.now(),
-    name: "",        // depois a gente coloca formulário
+    name: "",
     phone: "",
     address: "",
     payment: "",
@@ -490,7 +490,7 @@
     }))
   };
 
-  // 👉 envia para o servidor (impressão)
+  // envia para o servidor (impressão / planilha)
   try{
     await fetch(`${SERVER_URL}/order`, {
       method: 'POST',
@@ -498,8 +498,33 @@
       body: JSON.stringify(order)
     });
   }catch(err){
-    alert("Erro ao enviar para a impressora");
+    console.warn("Pedido não enviado para a impressora:", err);
   }
+
+  // abre WhatsApp
+  const phone = String(WHATSAPP_PHONE||'').replace(/\D+/g,'');
+  const text = buildMessage();
+  window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
+
+  // finalização da compra (UX)
+  state.cart = [];
+  renderCart();
+  alert("Pedido enviado com sucesso! 🍔 Aguarde a confirmação.");
+}
+
+  };
+
+  // 👉 envia para o servidor (impressão)
+  try{
+  await fetch(`${SERVER_URL}/order`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
+  });
+}catch(err){
+  console.warn("Pedido não enviado para a impressora:", err);
+}
+
 
   // 👉 continua abrindo o WhatsApp normalmente
   const phone = String(WHATSAPP_PHONE||'').replace(/\D+/g,'');
