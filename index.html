@@ -396,10 +396,15 @@
       renderCart();
 
       // no celular: abre o carrinho automaticamente
-      if(isMobile()){
-        setCartOpen(true);
-      }
-    }
+    // Desktop: carrinho sempre aberto
+// Mobile: carrinho sempre começa fechado
+if(isMobile()){
+  setCartOpen(false);
+}else{
+  setCartOpen(true);
+  if(overlay) overlay.classList.remove('show');
+}
+
 
     function removeFromCart(id){
       state.cart=state.cart.filter(i=>i.id!==id);
