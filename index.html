@@ -55,14 +55,20 @@
       justify-content:flex-end;
     }
     .chip{
-      padding:8px 12px;border-radius:999px;
-      background:#1b1d21;color:#d9dbe1;border:1px solid #262830;
-      cursor:pointer;font-size:13px;transition:.2s;user-select:none;
-      white-space:nowrap;
-    }
-    .chip.active,.chip:hover{
-      background:var(--primary);color:var(--primary-contrast);border-color:transparent
-    }
+  padding:8px 12px;border-radius:999px;
+  background:rgba(255,255,255,.04);
+  color:#e9e9ee;
+  border:1px solid rgba(255,255,255,.08);
+  cursor:pointer;font-size:13px;transition:.2s;user-select:none;
+  white-space:nowrap;
+  }
+  .chip.active,.chip:hover{
+  background:var(--primary);
+  color:var(--primary-contrast);
+  border-color:transparent;
+  box-shadow: 0 10px 22px rgba(255,176,0,.18);
+}
+
 
     /* No celular: categorias com rolagem horizontal bonita */
     @media (max-width: 720px){
