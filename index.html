@@ -48,22 +48,30 @@
     .brand h1{font-size:18px;margin:0;line-height:1.1}
     .brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
 
-    /* Barra flutuante das categorias (linha de baixo) */
+    /* Barra de categorias + busca (linha de baixo) */
     .catbar{
       max-width:1100px;
       margin:0 auto;
       padding: 0 14px 12px;
     }
+    .catrow{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+
+    /* No PC: sem caixa atrás (clean) */
     .nav{
       display:flex;
       gap:10px;
-      flex-wrap:wrap;            /* <-- quebra linha se precisar */
+      flex-wrap:wrap;
       justify-content:flex-start;
-      background: rgba(20,21,26,.55); /* opaco/flutuante */
-      border: 1px solid rgba(255,255,255,.07);
-      border-radius: 16px;
-      padding: 10px;
-      box-shadow: 0 8px 22px rgba(0,0,0,.30);
+      background: transparent;
+      border: none;
+      padding: 0;
+      box-shadow: none;
+      margin:0;
     }
 
     .chip{
@@ -81,13 +89,55 @@
       box-shadow: 0 10px 22px rgba(255,176,0,.18);
     }
 
-    /* No mobile: permite rolar horizontalmente se ficar comprido,
-       mas também quebra linha se você quiser (wrap já faz isso).
-       Aqui eu deixo "bonito" e sem sumir. */
-    @media (max-width: 720px){
-      .nav{
-        gap:10px;
+    /* Busca */
+    .search{
+      position:relative;
+      flex: 0 0 320px;
+      max-width: 320px;
+    }
+    .search input{
+      width:100%;
+      padding:10px 12px 10px 38px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(0,0,0,.22);
+      color:#fff;
+      outline:none;
+      font-size:14px;
+    }
+    .search input::placeholder{ color: rgba(255,255,255,.45); }
+    .search svg{
+      position:absolute; left:12px; top:50%;
+      transform:translateY(-50%);
+      width:18px;height:18px;
+      opacity:.7;
+    }
+
+    /* No mobile: deixa a área “flutuante/opaca” e empilha */
+    @media (max-width: 960px){
+      .catrow{
+        flex-direction:column;
+        align-items:stretch;
       }
+      .search{
+        flex: 1 1 auto;
+        max-width:none;
+      }
+      .nav{
+        background: rgba(20,21,26,.55);
+        border: 1px solid rgba(255,255,255,.07);
+        border-radius: 16px;
+        padding: 10px;
+        box-shadow: 0 8px 22px rgba(0,0,0,.30);
+
+        /* rolagem horizontal se ficar grande */
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        overflow-y:hidden;
+        -webkit-overflow-scrolling:touch;
+        scrollbar-width:none;
+      }
+      .nav::-webkit-scrollbar{display:none}
     }
 
     .wrap{
@@ -96,11 +146,27 @@
     }
     @media (max-width: 960px){ .wrap{grid-template-columns:1fr} }
 
+    /* Lista de seções por categoria */
+    .sectionTitle{
+      margin: 18px 0 10px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: .2px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+    .sectionTitle:after{
+      content:"";
+      height:1px;
+      flex:1;
+      background: rgba(255,255,255,.10);
+    }
+
     .grid{
       display:grid;gap:12px;
       grid-template-columns:repeat(auto-fill,minmax(220px,1fr))
     }
-    /* 2 colunas no celular */
     @media (max-width: 600px){
       .grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
     }
@@ -156,7 +222,7 @@
 
     /* Carrinho (desktop) */
     .cart{
-      position:sticky;top:86px;align-self:start;
+      position:sticky;top:96px;align-self:start;
       background:rgba(20,21,26,.92);
       border:1px solid rgba(255,255,255,.08);
       border-radius:var(--radius);
@@ -209,7 +275,6 @@
     /* Mobile: carrinho escondido quando fechado */
     @media (max-width: 960px){
       main.wrap{ padding-bottom: 120px; }
-
       .cart{
         position:fixed;left:0;right:0;bottom:0;top:auto;
         border-radius:18px 18px 0 0;
@@ -227,7 +292,7 @@
       #toggleCartBtn{ display:none; }
     }
 
-    /* Botão flutuante (mobile) - cores mudam via JS */
+    /* Botão flutuante (mobile) */
     .fabCart{
       position:fixed;right:16px;bottom:16px;
       width:58px;height:58px;border-radius:18px;
@@ -270,8 +335,8 @@
   <header>
     <div class="topbar">
       <div class="logoBox">
-        <!-- coloque sua logo em images/logo.png -->
-        <img src="images/logo.jpeg" alt="Quero Burguer"
+        <!-- SUA LOGO AQUI: coloque o arquivo em images/logo.png -->
+        <img src="images/logo.png" alt="Quero Burguer"
              onerror="this.style.display='none'; this.parentElement.innerHTML='<b style=&quot;color:#ffb000&quot;>QB</b>';">
       </div>
 
@@ -281,16 +346,26 @@
       </div>
     </div>
 
-    <!-- CATEGORIAS EM LINHA DE BAIXO -->
     <div class="catbar">
-      <nav class="nav" id="categoryChips"></nav>
+      <div class="catrow">
+        <nav class="nav" id="categoryChips"></nav>
+
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
+            <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <input id="searchInput" type="search" placeholder="Buscar no cardápio..." />
+        </div>
+      </div>
     </div>
   </header>
 
   <div class="overlay" id="overlay"></div>
 
   <main class="wrap">
-    <section><div class="grid" id="productGrid"></div></section>
+    <!-- Agora o conteúdo vai ser renderizado como SEÇÕES -->
+    <section id="productGrid"></section>
 
     <aside class="cart" id="cartBox">
       <div class="cartHeader">
@@ -350,7 +425,11 @@
     ];
 
     // ========= ESTADO =========
-    const state = { category:'Todos', cart:[] };
+    const state = {
+      category: 'Todos',
+      cart: [],
+      q: '' // texto de busca
+    };
 
     const formatBRL = (n) => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
     const unique = (arr) => [...new Set(arr)];
@@ -365,6 +444,7 @@
     const sendBtn = document.getElementById('sendBtn');
     const clearBtn = document.getElementById('clearBtn');
     const cartBadge = document.getElementById('cartBadge');
+    const searchInput = document.getElementById('searchInput');
 
     // ========= CATEGORIAS =========
     function renderCategories(){
@@ -374,6 +454,7 @@
       cats.forEach(cat=>{
         const b = document.createElement('button');
         b.className = 'chip' + (state.category===cat ? ' active' : '');
+        b.type = 'button';
         b.textContent = cat;
         b.onclick = () => { state.category = cat; renderCategories(); renderProducts(); };
         nav.appendChild(b);
@@ -397,7 +478,7 @@
               <button type="button">+</button>
             </div>
           </div>
-          <button class="addBtn">Adicionar</button>
+          <button class="addBtn" type="button">Adicionar</button>
         </div>
       `;
       const [minus, input, plus] = wrap.querySelectorAll('.qty>*');
@@ -407,11 +488,61 @@
       return wrap;
     }
 
+    function matchesSearch(p){
+      const q = (state.q || '').trim().toLowerCase();
+      if(!q) return true;
+      const text = `${p.name} ${p.desc||''} ${p.category||''}`.toLowerCase();
+      return text.includes(q);
+    }
+
+    function getFilteredProducts(){
+      // 1) categoria
+      let list = PRODUCTS;
+      if(state.category !== 'Todos'){
+        list = list.filter(p => p.category === state.category);
+      }
+      // 2) busca
+      list = list.filter(matchesSearch);
+      return list;
+    }
+
     function renderProducts(){
-      const grid = document.getElementById('productGrid');
-      grid.innerHTML = '';
-      const list = state.category==='Todos' ? PRODUCTS : PRODUCTS.filter(p=>p.category===state.category);
-      list.forEach(p=>grid.appendChild(productCard(p)));
+      const container = document.getElementById('productGrid');
+      container.innerHTML = '';
+
+      const filtered = getFilteredProducts();
+
+      // Se estiver em "Todos", agrupa por categoria (Lanches, Combos, etc.)
+      const categoriesToShow = (state.category === 'Todos')
+        ? unique(PRODUCTS.map(p=>p.category))
+        : [state.category];
+
+      let renderedAny = false;
+
+      categoriesToShow.forEach(cat => {
+        const items = filtered.filter(p => p.category === cat);
+        if(items.length === 0) return;
+
+        renderedAny = true;
+
+        const title = document.createElement('div');
+        title.className = 'sectionTitle';
+        title.textContent = cat;
+        container.appendChild(title);
+
+        const grid = document.createElement('div');
+        grid.className = 'grid';
+        items.forEach(p => grid.appendChild(productCard(p)));
+        container.appendChild(grid);
+      });
+
+      if(!renderedAny){
+        const msg = document.createElement('div');
+        msg.style.color = 'rgba(255,255,255,.65)';
+        msg.style.padding = '14px 2px';
+        msg.textContent = 'Nenhum item encontrado com esse filtro/busca.';
+        container.appendChild(msg);
+      }
     }
 
     // ========= CARRINHO =========
@@ -485,7 +616,6 @@
       document.getElementById('total').textContent = formatBRL(calcTotal());
 
       const has = state.cart.length > 0;
-
       sendBtn.disabled = !has;
       clearBtn.disabled = !has;
 
@@ -514,44 +644,51 @@
     window.addEventListener('resize', applyLayout);
 
     // ========= WHATSAPP =========
-    function buildWhatsAppText(){
-      const lines = [];
-      lines.push('🧾 *Pedido – Quero Burguer*');
-      lines.push('');
-      state.cart.forEach(i => lines.push(`• ${i.qty}x ${i.name} — ${formatBRL(i.price*i.qty)}`));
-      lines.push('');
-      lines.push(`Total: *${formatBRL(calcTotal())}*`);
-
+    function getCustomerFields(){
       const name = document.getElementById('customerName').value.trim();
       const phone = normalizeDigits(document.getElementById('customerPhone').value);
       const address = document.getElementById('customerAddress').value.trim();
       const pay = document.getElementById('paymentMethod').value;
       const obs = document.getElementById('noteText').value.trim();
+      return {
+        name: name || 'Não informado',
+        phone: phone || 'Não informado',
+        address: address || 'Não informado',
+        pay: pay || 'Não informado',
+        obs: obs || 'Sem observação'
+      };
+    }
+
+    function buildWhatsAppText(){
+      const lines = [];
+      lines.push('🧾 *Pedido – Quero Burguer*');
+      lines.push('');
+
+      state.cart.forEach(i => lines.push(`• ${i.qty}x ${i.name} — ${formatBRL(i.price*i.qty)}`));
 
       lines.push('');
-      if(name) lines.push(`Nome: ${name}`);
-      if(phone) lines.push(`Celular: ${phone}`);
-      if(address) lines.push(`Endereço: ${address}`);
-      if(pay) lines.push(`Pagamento: ${pay}`);
-      if(obs) lines.push(`Obs.: ${obs}`);
+      lines.push(`Total: *${formatBRL(calcTotal())}*`);
+
+      const c = getCustomerFields();
+      lines.push('');
+      lines.push(`Nome: ${c.name}`);
+      lines.push(`Celular: ${c.phone}`);
+      lines.push(`Endereço: ${c.address}`);
+      lines.push(`Pagamento: ${c.pay}`);
+      lines.push(`Obs.: ${c.obs}`);
 
       return encodeURIComponent(lines.join('\n'));
     }
 
     function buildOrderPayload(){
-      const name = document.getElementById('customerName').value.trim();
-      const phone = normalizeDigits(document.getElementById('customerPhone').value);
-      const address = document.getElementById('customerAddress').value.trim();
-      const pay = document.getElementById('paymentMethod').value;
-      const obs = document.getElementById('noteText').value.trim();
-
+      const c = getCustomerFields();
       return {
         number: Date.now(),
-        name,
-        phone,
-        address,
-        payment: pay,
-        note: obs,
+        name: c.name,
+        phone: c.phone,
+        address: c.address,
+        payment: c.pay,
+        note: c.obs,
         items: state.cart.map(i => ({ name: i.name, qty: i.qty, price: i.price }))
       };
     }
@@ -598,6 +735,12 @@
 
     sendBtn.addEventListener('click', send);
     clearBtn.addEventListener('click', clearCart);
+
+    // Busca (filtro em tempo real)
+    searchInput.addEventListener('input', () => {
+      state.q = searchInput.value;
+      renderProducts();
+    });
 
     // ========= INIT =========
     renderCategories();
