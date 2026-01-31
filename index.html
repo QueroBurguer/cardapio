@@ -222,7 +222,9 @@
 
     /* Carrinho (desktop) */
     .cart{
-      position:sticky;top:96px;align-self:start;
+      position:sticky;
+      top: calc(var(--headerH, 130px) + 12px); /* header + espacinho */
+      align-self:start;
       background:rgba(20,21,26,.92);
       border:1px solid rgba(255,255,255,.08);
       border-radius:var(--radius);
