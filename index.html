@@ -6,41 +6,84 @@
 <title>Quero Burguer</title>
 
 <style>
+:root{
+  --bg:#0f0f10;
+  --card:#16171a;
+  --muted:#a9abb3;
+  --text:#ffffff;
+  --primary:#ffb000;
+  --primary-contrast:#222;
+  --ok:#22c55e;
+  --radius:16px;
+}
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family: Arial, sans-serif;
-  background:#0f0f10;
-  color:#fff;
+  font-family:system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 header{
-  padding:16px;
-  background:#151518;
+  position:sticky;
+  top:0;
+  background:#14151a;
+  z-index:10;
+}
+.topbar{
   display:flex;
   align-items:center;
   gap:10px;
+  padding:12px;
 }
 .logo{
-  width:42px;
-  height:42px;
+  width:42px;height:42px;
   border-radius:10px;
-  background:#ffb000;
+  background:var(--primary);
   color:#000;
   display:flex;
   align-items:center;
   justify-content:center;
   font-weight:bold;
 }
-main{
+.nav{
+  display:flex;
+  gap:8px;
+  padding:0 12px 12px;
+  overflow-x:auto;
+}
+.chip{
+  padding:8px 14px;
+  border-radius:999px;
+  background:#1b1d21;
+  border:1px solid #262830;
+  color:#ddd;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.chip.active{
+  background:var(--primary);
+  color:#000;
+}
+.wrap{
+  display:grid;
+  grid-template-columns:1fr 320px;
+  gap:16px;
   padding:16px;
+}
+@media(max-width:960px){
+  .wrap{grid-template-columns:1fr}
 }
 .grid{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  grid-template-columns:repeat(auto-fill,minmax(180px,1fr));
   gap:12px;
 }
+@media(max-width:600px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+}
 .card{
-  background:#1a1a1e;
-  border-radius:12px;
+  background:var(--card);
+  border-radius:var(--radius);
   overflow:hidden;
 }
 .card img{
@@ -48,86 +91,93 @@ main{
   aspect-ratio:1/1;
   object-fit:cover;
 }
-.card .pad{
-  padding:10px;
-}
-.card h4{
-  margin:0 0 6px;
-  font-size:15px;
-}
-.card p{
-  margin:0 0 8px;
-  font-size:13px;
-  color:#aaa;
-}
-.price{
-  font-weight:bold;
-  margin-bottom:6px;
-}
-.add{
+.pad{padding:10px}
+.title{margin:0 0 4px;font-size:15px}
+.desc{font-size:13px;color:var(--muted);margin:0 0 6px}
+.price{font-weight:bold;margin-bottom:6px}
+.addBtn{
   width:100%;
   padding:8px;
   border:0;
-  border-radius:8px;
-  background:#ffb000;
+  border-radius:10px;
+  background:var(--primary);
   font-weight:bold;
   cursor:pointer;
 }
-.cart-btn{
+.cart{
+  background:#14151a;
+  border-radius:var(--radius);
+  padding:12px;
+}
+.cart h3{margin-top:0}
+.cartItems{max-height:50vh;overflow:auto}
+.cartLine{font-size:14px;margin-bottom:6px}
+.sendBtn{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:12px;
+  background:var(--ok);
+  font-weight:bold;
+  cursor:pointer;
+}
+.cart-float{
   position:fixed;
   bottom:16px;
   right:16px;
-  background:#ffb000;
-  color:#000;
-  width:56px;
-  height:56px;
+  width:56px;height:56px;
   border-radius:50%;
-  display:flex;
+  background:var(--primary);
+  color:#000;
+  display:none;
   align-items:center;
   justify-content:center;
   font-size:22px;
-  font-weight:bold;
 }
-.cart{
+@media(max-width:960px){
+  .cart{display:none}
+  .cart-float{display:flex}
+}
+.cart.mobile{
   position:fixed;
   inset:0;
-  background:#0f0f10;
+  background:var(--bg);
   padding:16px;
   display:none;
   flex-direction:column;
 }
-.cart.open{display:flex;}
-.cart h3{margin-top:0;}
-.cart-items{flex:1;overflow:auto;}
-.cart-item{margin-bottom:8px;font-size:14px;}
-.cart button{
-  padding:12px;
-  border:0;
-  border-radius:10px;
-  background:#25d366;
-  font-weight:bold;
-  cursor:pointer;
-}
+.cart.mobile.open{display:flex}
 </style>
 </head>
 
 <body>
 
 <header>
-  <div class="logo">QB</div>
-  <h2>Quero Burguer</h2>
+  <div class="topbar">
+    <div class="logo">QB</div>
+    <h2>Quero Burguer</h2>
+  </div>
+  <div class="nav" id="categoryChips"></div>
 </header>
 
-<main>
-  <div class="grid" id="products"></div>
+<main class="wrap">
+  <section>
+    <div class="grid" id="productGrid"></div>
+  </section>
+
+  <aside class="cart">
+    <h3>Carrinho</h3>
+    <div class="cartItems" id="cartItems"></div>
+    <button class="sendBtn" onclick="openWhatsApp()">Enviar pelo WhatsApp</button>
+  </aside>
 </main>
 
-<div class="cart-btn" onclick="toggleCart()">🛒</div>
+<div class="cart-float" onclick="toggleMobileCart()">🛒</div>
 
-<div class="cart" id="cart">
+<div class="cart mobile" id="mobileCart">
   <h3>Carrinho</h3>
-  <div class="cart-items" id="cartItems"></div>
-  <button onclick="openWhatsApp()">Enviar pedido</button>
+  <div class="cartItems" id="cartItemsMobile"></div>
+  <button class="sendBtn" onclick="openWhatsApp()">Enviar pelo WhatsApp</button>
 </div>
 
 <script>
@@ -135,92 +185,106 @@ const WHATSAPP_PHONE = "5521992497289";
 const SERVER_URL = "https://blessed-perl-oem-ceo.trycloudflare.com";
 
 const PRODUCTS = [
-  {name:"Quero Smash", price:11.90, img:"https://picsum.photos/300?1"},
-  {name:"Quero Bacon", price:18.90, img:"https://picsum.photos/300?2"},
-  {name:"Batata M", price:9.90, img:"https://picsum.photos/300?3"},
-  {name:"Refrigerante", price:4.90, img:"https://picsum.photos/300?4"},
+ {name:"Quero Smash",price:11.90,category:"Lanches",desc:"Smash 140g",img:"https://picsum.photos/300?1"},
+ {name:"Quero Bacon",price:18.90,category:"Lanches",desc:"Com bacon",img:"https://picsum.photos/300?2"},
+ {name:"Combo Individual",price:29.90,category:"Combos",desc:"Lanche + Batata + Refri",img:"https://picsum.photos/300?3"},
+ {name:"Batata M",price:9.90,category:"Acompanhamentos",desc:"Batata crocante",img:"https://picsum.photos/300?4"},
+ {name:"Guaraná 250ml",price:4.90,category:"Bebidas",desc:"Gelado",img:"https://picsum.photos/300?5"},
 ];
 
-let cart = [];
+let state={category:"Todos",cart:[]};
+
+function renderCategories(){
+ const cats=["Todos",...new Set(PRODUCTS.map(p=>p.category))];
+ const nav=document.getElementById("categoryChips");
+ nav.innerHTML="";
+ cats.forEach(c=>{
+  const b=document.createElement("button");
+  b.className="chip"+(state.category===c?" active":"");
+  b.textContent=c;
+  b.onclick=()=>{state.category=c;renderCategories();renderProducts();}
+  nav.appendChild(b);
+ });
+}
 
 function renderProducts(){
-  const el = document.getElementById("products");
-  el.innerHTML="";
-  PRODUCTS.forEach(p=>{
-    el.innerHTML+=`
-      <div class="card">
-        <img src="${p.img}">
-        <div class="pad">
-          <h4>${p.name}</h4>
-          <p>Delicioso</p>
-          <div class="price">R$ ${p.price.toFixed(2)}</div>
-          <button class="add" onclick='addToCart(${JSON.stringify(p)})'>Adicionar</button>
-        </div>
-      </div>
-    `;
-  });
+ const grid=document.getElementById("productGrid");
+ grid.innerHTML="";
+ const list=state.category==="Todos"?PRODUCTS:PRODUCTS.filter(p=>p.category===state.category);
+ list.forEach(p=>{
+  grid.innerHTML+=`
+   <div class="card">
+    <img src="${p.img}">
+    <div class="pad">
+     <h4 class="title">${p.name}</h4>
+     <p class="desc">${p.desc}</p>
+     <div class="price">R$ ${p.price.toFixed(2)}</div>
+     <button class="addBtn" onclick='addToCart(${JSON.stringify(p)})'>Adicionar</button>
+    </div>
+   </div>`;
+ });
 }
 
 function addToCart(p){
-  cart.push(p);
-  renderCart();
-  toggleCart(true);
+ state.cart.push(p);
+ renderCart();
+ openMobileCart();
 }
 
 function renderCart(){
-  const el=document.getElementById("cartItems");
-  el.innerHTML="";
-  cart.forEach(i=>{
-    el.innerHTML+=`<div class="cart-item">• ${i.name} - R$ ${i.price.toFixed(2)}</div>`;
-  });
-}
-
-function toggleCart(force){
-  const c=document.getElementById("cart");
-  if(force===true)c.classList.add("open");
-  else c.classList.toggle("open");
+ const el=document.getElementById("cartItems");
+ const elM=document.getElementById("cartItemsMobile");
+ el.innerHTML="";
+ elM.innerHTML="";
+ state.cart.forEach(i=>{
+  const line=`<div class="cartLine">• ${i.name} - R$ ${i.price.toFixed(2)}</div>`;
+  el.innerHTML+=line;
+  elM.innerHTML+=line;
+ });
 }
 
 function buildMessage(){
-  let msg="🧾 Pedido Quero Burguer\n\n";
-  let total=0;
-  cart.forEach(i=>{
-    msg+=`• ${i.name} - R$ ${i.price.toFixed(2)}\n`;
-    total+=i.price;
+ let t="🧾 Pedido Quero Burguer\n\n",total=0;
+ state.cart.forEach(i=>{t+=`• ${i.name} - R$ ${i.price.toFixed(2)}\n`;total+=i.price});
+ t+=`\nTotal: R$ ${total.toFixed(2)}`;
+ return encodeURIComponent(t);
+}
+
+function openWhatsApp(){
+ if(state.cart.length===0){alert("Adicione itens ao carrinho.");return;}
+
+ const order={
+  number:Date.now(),
+  items:state.cart.map(i=>({name:i.name,qty:1,price:i.price}))
+ };
+
+ try{
+  fetch(`${SERVER_URL}/order`,{
+   method:"POST",
+   headers:{"Content-Type":"application/json"},
+   body:JSON.stringify(order)
   });
-  msg+=`\nTotal: R$ ${total.toFixed(2)}`;
-  return encodeURIComponent(msg);
+ }catch(e){console.warn(e);}
+
+ const phone=WHATSAPP_PHONE.replace(/\D/g,"");
+ window.location.href=`https://wa.me/${phone}?text=${buildMessage()}`;
+
+ state.cart=[];
+ renderCart();
+ closeMobileCart();
 }
 
-async function openWhatsApp(){
-  if(cart.length===0){
-    alert("Adicione pelo menos 1 item.");
-    return;
-  }
-
-  const order={
-    number:Date.now(),
-    items:cart.map(i=>({name:i.name,qty:1,price:i.price}))
-  };
-
-  try{
-    fetch(`${SERVER_URL}/order`,{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify(order)
-    });
-  }catch(e){
-    console.warn(e);
-  }
-
-  const phone=WHATSAPP_PHONE.replace(/\D/g,"");
-  const text=buildMessage();
-  window.location.href=`https://wa.me/${phone}?text=${text}`;
-
-  cart=[];
-  renderCart();
+function toggleMobileCart(){
+ document.getElementById("mobileCart").classList.toggle("open");
+}
+function openMobileCart(){
+ document.getElementById("mobileCart").classList.add("open");
+}
+function closeMobileCart(){
+ document.getElementById("mobileCart").classList.remove("open");
 }
 
+renderCategories();
 renderProducts();
 </script>
 
