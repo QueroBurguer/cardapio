@@ -1,255 +1,505 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quero Burguer – Cardápio</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quero Burguer – Cardápio</title>
 
-<style>
-:root{
-  --bg:#0f0f10;--card:#16171a;--muted:#a9abb3;--text:#fff;
-  --primary:#ffb000;--primary-contrast:#222;--danger:#ff4d4f;--ok:#22c55e;
-  --radius:16px;--shadow:0 10px 30px rgba(0,0,0,.35);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;font-family:system-ui,Arial;
-  background:linear-gradient(180deg,#0c0c0d,#121316 40%,#0c0c0d);
-  color:var(--text);
-}
-header{
-  position:sticky;top:0;z-index:5;
-  background:rgba(18,19,22,.85);
-  backdrop-filter:blur(6px);
-  border-bottom:1px solid #1f2024;
-}
-.topbar{
-  max-width:1100px;margin:auto;padding:14px 16px;
-  display:flex;gap:12px;align-items:center
-}
-.logo{
-  width:42px;height:42px;border-radius:12px;
-  background:linear-gradient(145deg,#ffcc4d,#ff9800);
-  display:grid;place-items:center;
-}
-.logo b{color:#1e1f23}
-.brand h1{margin:0;font-size:18px}
-.brand p{margin:2px 0 0;font-size:12px;color:var(--muted)}
-.nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
-.chip{
-  padding:8px 12px;border-radius:999px;
-  background:#1b1d21;color:#d9dbe1;
-  border:1px solid #262830;cursor:pointer;font-size:13px
-}
-.chip.active,.chip:hover{
-  background:var(--primary);color:var(--primary-contrast);border-color:transparent
-}
+  <style>
+    :root{
+      --bg:#0f0f10; --card:#16171a; --muted:#a9abb3; --text:#fff;
+      --primary:#ffb000; --primary-contrast:#222; --danger:#ff4d4f; --ok:#22c55e;
+      --radius:16px; --shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:system-ui,Segoe UI,Roboto,Arial,sans-serif;
+      background:linear-gradient(180deg,#0c0c0d,#121316 40%,#0c0c0d);
+      color:var(--text);
+    }
 
-.wrap{
-  max-width:1100px;margin:18px auto;padding:0 16px;
-  display:grid;grid-template-columns:1fr 360px;gap:18px
-}
-@media(max-width:960px){.wrap{grid-template-columns:1fr}}
+    header{
+      position:sticky;top:0;z-index:5;
+      backdrop-filter:blur(6px);
+      background:rgba(18,19,22,.85);
+      border-bottom:1px solid #1f2024;
+    }
+    .topbar{
+      max-width:1100px;margin:0 auto;padding:14px 16px;
+      display:flex;gap:12px;align-items:center
+    }
+    .logo{
+      width:42px;height:42px;border-radius:12px;
+      background:linear-gradient(145deg,#ffcc4d,#ff9800);
+      display:grid;place-items:center;
+      box-shadow:var(--shadow)
+    }
+    .logo b{color:#1e1f23}
+    .brand h1{font-size:18px;margin:0}
+    .brand p{margin:2px 0 0;color:var(--muted);font-size:12px}
 
-.grid{
-  display:grid;gap:14px;
-  grid-template-columns:repeat(auto-fill,minmax(220px,1fr))
-}
+    .nav{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+    .chip{
+      padding:8px 12px;border-radius:999px;
+      background:#1b1d21;color:#d9dbe1;border:1px solid #262830;
+      cursor:pointer;font-size:13px;transition:.2s;
+      user-select:none;
+    }
+    .chip.active,.chip:hover{
+      background:var(--primary);color:var(--primary-contrast);border-color:transparent
+    }
 
-/* ===== MOBILE: 2 COLUNAS ===== */
-@media(max-width:600px){
-  .grid{grid-template-columns:repeat(2,1fr)}
-}
+    .wrap{
+      max-width:1100px;margin:18px auto;padding:0 16px;
+      display:grid;grid-template-columns:1fr 360px;gap:18px
+    }
+    @media (max-width: 960px){ .wrap{grid-template-columns:1fr} }
 
-.card{
-  background:var(--card);border:1px solid #1f2024;
-  border-radius:var(--radius);box-shadow:var(--shadow);
-  overflow:hidden;display:flex;flex-direction:column
-}
+    .grid{
+      display:grid;gap:12px;
+      grid-template-columns:repeat(auto-fill,minmax(220px,1fr))
+    }
 
-/* FOTO QUADRADA */
-.thumb{
-  aspect-ratio:1/1;
-  width:100%;object-fit:cover;background:#000
-}
+    /* ===== MOBILE: 2 COLUNAS ===== */
+    @media (max-width: 600px){
+      .grid{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    }
 
-.pad{padding:10px}
-.title{margin:0 0 4px;font-size:15px;font-weight:700}
-.desc{margin:0 0 6px;font-size:13px;color:var(--muted)}
-.priceRow{display:flex;justify-content:space-between;align-items:center}
-.price{font-weight:800}
-.qty{display:flex;gap:6px;align-items:center}
-.qty button{
-  width:26px;height:26px;border:0;border-radius:50%;
-  background:#2a2b31;color:#fff;font-size:16px
-}
-.qty input{
-  width:32px;text-align:center;border:0;background:transparent;color:#fff
-}
-.addBtn{
-  margin-top:6px;padding:8px;border-radius:10px;
-  border:0;background:var(--primary);
-  color:var(--primary-contrast);font-weight:800
-}
+    .card{
+      background:var(--card);
+      border:1px solid #1f2024;
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      display:flex;flex-direction:column;
+      transition:transform .2s
+    }
+    .card:hover{transform:translateY(-2px)}
 
-/* ===== CARRINHO ===== */
-.cart{
-  background:#14151a;border:1px solid #1f2024;
-  border-radius:var(--radius);box-shadow:var(--shadow);
-}
-.cartHeader{
-  padding:14px;display:flex;justify-content:space-between;align-items:center
-}
-.cart .items{
-  padding:8px 14px;display:flex;flex-direction:column;gap:10px
-}
-.line{
-  background:#101115;border:1px solid #1d1f25;
-  border-radius:12px;padding:8px;
-  display:grid;grid-template-columns:1fr auto auto;gap:6px
-}
-.note{padding:0 14px;display:grid;gap:8px}
-.note input,.note textarea,.note select{
-  width:100%;padding:8px;border-radius:10px;
-  background:#0f1013;border:1px solid #2a2b31;color:#fff
-}
-.totals{padding:10px 14px;border-top:1px dashed #2a2b31}
-.actions{padding:14px;display:grid;gap:8px}
-.btn{
-  padding:12px;border-radius:12px;border:0;font-weight:800
-}
-.btn.whatsapp{background:var(--ok)}
-.btn.clear{background:var(--danger)}
+    /* Foto menor e boa pra 2 colunas: quadrada */
+    .thumb{
+      aspect-ratio:1/1;
+      width:100%;
+      object-fit:cover;
+      background:#0c0c0d;
+    }
 
-/* ===== MOBILE CARRINHO ESCONDIDO ===== */
-@media(max-width:960px){
-  main.wrap{padding-bottom:120px}
-  .cart{
-    position:fixed;left:0;right:0;bottom:0;
-    transform:translateY(110%);
-    transition:.25s;border-radius:18px 18px 0 0;
-    max-height:85vh;z-index:30;pointer-events:none
-  }
-  .cart.open{transform:translateY(0);pointer-events:auto}
-}
+    .pad{padding:10px}
+    .title{font-weight:800;margin:0 0 4px;font-size:14px}
+    .desc{color:var(--muted);font-size:12px;line-height:1.25;margin:0 0 8px}
 
-/* ===== BOTÃO FLUTUANTE ===== */
-.fab{
-  position:fixed;right:16px;bottom:16px;
-  width:56px;height:56px;border-radius:18px;
-  background:#14151a;border:1px solid #2a2b31;
-  display:none;place-items:center;z-index:40
-}
-@media(max-width:960px){.fab{display:grid}}
-.badge{
-  position:absolute;top:-6px;right:-6px;
-  background:red;color:#fff;font-size:12px;
-  min-width:20px;height:20px;border-radius:999px;
-  display:grid;place-items:center;font-weight:900
-}
-</style>
+    .priceRow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .price{font-weight:900;font-size:14px}
+
+    .qty{
+      display:inline-flex;align-items:center;gap:6px;
+      border:1px solid #2a2b31;border-radius:999px;padding:2px 6px
+    }
+    .qty button{
+      background:transparent;border:0;color:#fff;
+      font-size:18px;width:26px;height:26px;cursor:pointer
+    }
+    .qty input{
+      width:30px;text-align:center;border:0;background:transparent;color:#fff;font-size:13px
+    }
+
+    .addBtn{
+      margin-top:8px;width:100%;
+      padding:10px 10px;border-radius:12px;border:0;cursor:pointer;
+      background:var(--primary);color:var(--primary-contrast);
+      font-weight:900;
+    }
+
+    /* ===== Carrinho (desktop) ===== */
+    .cart{
+      position:sticky;top:76px;align-self:start;
+      background:#14151a;border:1px solid #1f2024;
+      border-radius:var(--radius);box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .cartHeader{
+      padding:14px 14px 0;
+      display:flex;align-items:center;justify-content:space-between;gap:10px
+    }
+    .cartHeader h3{margin:0}
+    .cart .items{
+      padding:10px 14px;
+      display:flex;flex-direction:column;gap:10px;
+      max-height:40vh;overflow:auto
+    }
+    .line{
+      background:#101115;border:1px solid #1d1f25;border-radius:12px;
+      padding:10px;display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center
+    }
+    .line .name{font-weight:800;font-size:13px}
+    .line .unit{color:var(--muted);font-size:12px}
+    .line .subtotal{font-weight:800;font-size:13px}
+
+    .note{margin:8px 14px 0;display:grid;gap:8px}
+    .note textarea,.note input,.note select{
+      width:100%;border-radius:12px;background:#0f1013;border:1px solid #2a2b31;
+      color:#fff;padding:10px;font-size:14px
+    }
+    .note textarea{min-height:64px;resize:vertical}
+    .totals{
+      border-top:1px dashed #2a2b31;
+      margin:10px 14px 0;padding:10px 0;display:grid;gap:6px
+    }
+    .row{display:flex;justify-content:space-between;align-items:center}
+    .actions{display:grid;gap:10px;padding:14px}
+    .btn{
+      padding:12px;border-radius:12px;border:0;cursor:pointer;font-weight:900;letter-spacing:.3px
+    }
+    .btn.whatsapp{background:var(--ok);color:#08150c}
+    .btn.clear{background:var(--danger);color:#1e0f10}
+    .btn:disabled{opacity:.55;cursor:not-allowed}
+
+    /* ===== Mobile: carrinho escondido de verdade ===== */
+    @media (max-width: 960px){
+      main.wrap{ padding-bottom: 120px; }
+
+      .cart{
+        position:fixed;left:0;right:0;bottom:0;top:auto;
+        border-radius:18px 18px 0 0;
+        max-height:85vh;
+        transform:translateY(110%); /* some COMPLETAMENTE */
+        transition:transform .22s ease;
+        z-index:30;
+        pointer-events:none;
+      }
+      .cart.open{
+        transform:translateY(0);
+        pointer-events:auto;
+      }
+      .cart .items{ max-height:30vh; }
+
+      /* botão fechar só no mobile */
+      #toggleCartBtn{ display:inline-flex; }
+    }
+    @media (min-width: 961px){
+      #toggleCartBtn{ display:none; }
+    }
+
+    /* ===== Botão flutuante (mobile) ===== */
+    .fabCart{
+      position:fixed;right:16px;bottom:16px;
+      width:58px;height:58px;border-radius:18px;
+      border:1px solid #2a2b31;background:#14151a;
+      box-shadow:var(--shadow);
+      display:none;place-items:center;
+      cursor:pointer;z-index:40;
+    }
+    .fabCart svg{ width:26px;height:26px; }
+    @media (max-width: 960px){
+      .fabCart{ display:grid; }
+    }
+    .badge{
+      position:absolute;top:-8px;right:-8px;
+      min-width:22px;height:22px;padding:0 6px;border-radius:999px;
+      background:var(--danger);color:#fff;font-size:12px;font-weight:900;
+      display:grid;place-items:center;
+      border:2px solid #0f0f10;
+      line-height:1;
+    }
+
+    /* Overlay para fechar tocando fora */
+    .overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.55);
+      z-index:25;display:none;
+    }
+    .overlay.show{display:block}
+  </style>
 </head>
 
 <body>
-
-<header>
-  <div class="topbar">
-    <div class="logo"><b>QB</b></div>
-    <div class="brand">
-      <h1>Quero Burguer</h1>
-      <p>Peça pelo WhatsApp</p>
+  <header>
+    <div class="topbar">
+      <div class="logo"><b>QB</b></div>
+      <div class="brand">
+        <h1>Quero Burguer</h1>
+        <p>Cardápio digital com pedido via WhatsApp</p>
+      </div>
+      <nav class="nav" id="categoryChips"></nav>
     </div>
-    <nav class="nav" id="categoryChips"></nav>
-  </div>
-</header>
+  </header>
 
-<main class="wrap">
-<section><div class="grid" id="productGrid"></div></section>
+  <div class="overlay" id="overlay"></div>
 
-<aside class="cart" id="cart">
-  <div class="cartHeader">
-    <h3>Carrinho</h3>
-    <button class="chip" onclick="toggleCart()">Fechar</button>
-  </div>
-  <div class="items" id="cartItems"></div>
-  <div class="note">
-    <input id="name" placeholder="Nome">
-    <input id="phone" placeholder="Celular">
-    <input id="address" placeholder="Endereço">
-    <select id="pay">
-      <option>Dinheiro</option><option>Pix</option>
-      <option>Cartão crédito</option><option>Cartão débito</option>
-    </select>
-    <textarea id="obs" placeholder="Observação"></textarea>
-  </div>
-  <div class="totals"><strong id="total">R$ 0,00</strong></div>
-  <div class="actions">
-    <button class="btn whatsapp" onclick="send()">Enviar WhatsApp</button>
-    <button class="btn clear" onclick="clearCart()">Limpar</button>
-  </div>
-</aside>
-</main>
+  <main class="wrap">
+    <section><div class="grid" id="productGrid"></div></section>
 
-<button class="fab" onclick="toggleCart()">
-  🛒
-  <span class="badge" id="badge" style="display:none">0</span>
-</button>
+    <aside class="cart" id="cartBox">
+      <div class="cartHeader">
+        <h3>Carrinho</h3>
+        <button id="toggleCartBtn" class="chip" type="button">Fechar</button>
+      </div>
 
-<script>
-const WHATSAPP_PHONE='5521992497289';
-const PRODUCTS=[
-{id:'x1',name:'Quero Smash',price:11.9,category:'Lanches',desc:'Smash 140g',image:'images/smash.jpg'},
-{id:'x2',name:'Quero Bacon',price:18.9,category:'Lanches',desc:'Com bacon',image:'images/bacon.jpg'}
-];
-let cart=[];
-const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const isMobile=()=>window.innerWidth<=960;
+      <div class="items" id="cartItems"></div>
 
-function render(){
-  const g=document.getElementById('productGrid');g.innerHTML='';
-  PRODUCTS.forEach(p=>{
-    const d=document.createElement('div');d.className='card';
-    d.innerHTML=`
-      <img class="thumb" src="${p.image}">
-      <div class="pad">
-        <h4 class="title">${p.name}</h4>
-        <p class="desc">${p.desc}</p>
-        <div class="priceRow">
-          <span class="price">${brl(p.price)}</span>
+      <div class="note">
+        <input id="customerName" placeholder="Nome do cliente" />
+        <input id="customerPhone" placeholder="Celular (DDD + número)" inputmode="numeric" />
+        <input id="customerAddress" placeholder="Endereço (Rua, número, bairro)" />
+        <select id="paymentMethod">
+          <option value="Dinheiro">Dinheiro</option>
+          <option value="Pix">Pix</option>
+          <option value="Cartão (crédito)">Cartão (crédito)</option>
+          <option value="Cartão (débito)">Cartão (débito)</option>
+        </select>
+        <textarea id="noteText" placeholder="Observação: sem cebola, ponto da carne, sem gelo..."></textarea>
+      </div>
+
+      <div class="totals">
+        <div class="row"><span>Total</span><strong id="total">R$ 0,00</strong></div>
+      </div>
+
+      <div class="actions">
+        <button class="btn whatsapp" id="sendBtn" disabled>Enviar WhatsApp</button>
+        <button class="btn clear" id="clearBtn" disabled>Limpar carrinho</button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Botão flutuante (mobile) -->
+  <button class="fabCart" id="fabCart" type="button" aria-label="Abrir carrinho">
+    <span class="badge" id="cartBadge" style="display:none;">0</span>
+    <svg viewBox="0 0 24 24" fill="none">
+      <path d="M6 6h15l-1.5 9h-12L6 6Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/>
+      <path d="M6 6 5 3H2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      <circle cx="9" cy="20" r="1.5" fill="currentColor"/>
+      <circle cx="18" cy="20" r="1.5" fill="currentColor"/>
+    </svg>
+  </button>
+
+  <script>
+    // ========= CONFIG =========
+    const WHATSAPP_PHONE = '5521992497289'; // <-- seu número (55 + DDD + número)
+
+    // ========= PRODUTOS =========
+    const PRODUCTS = [
+      { id:'xsmash', name:'Quero Smash 140g', price:11.90, category:'Lanches', desc:'Pão brioche, 140g smash, queijo prato e maionese da casa.', image:'images/smash.jpg' },
+      { id:'xbacon', name:'Quero Bacon', price:18.90, category:'Lanches', desc:'Carne 160g, bacon crocante, cheddar e molho especial.', image:'images/bacon.jpg' },
+      { id:'combo1', name:'Combo Individual', price:29.90, category:'Combos', desc:'1 lanche + batata + refri.', image:'images/combo1.jpg' },
+      { id:'comboFamilia', name:'Combo Família 2', price:59.90, category:'Combos', desc:'2 lanches + 2 batatas + 2 bebidas.', image:'images/combo_familia.jpg' },
+      { id:'batata', name:'Batata Crinkle M', price:9.90, category:'Acompanhamentos', desc:'Batata crocante.', image:'images/batata.jpg' },
+      { id:'guaramor', name:'Guaramor 250ml', price:4.90, category:'Bebidas', desc:'Guaraná 250ml.', image:'images/guaramor.jpg' },
+    ];
+
+    // ========= ESTADO =========
+    const state = { category:'Todos', cart:[] };
+
+    const formatBRL = (n) => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    const unique = (arr) => [...new Set(arr)];
+    const normalizeDigits = (s) => String(s||'').replace(/\D+/g,'');
+    const isMobile = () => window.matchMedia('(max-width: 960px)').matches;
+
+    // ========= CATEGORIAS =========
+    function renderCategories(){
+      const cats = ['Todos', ...unique(PRODUCTS.map(p=>p.category))];
+      const nav = document.getElementById('categoryChips');
+      nav.innerHTML = '';
+      cats.forEach(cat=>{
+        const b = document.createElement('button');
+        b.className = 'chip' + (state.category===cat ? ' active' : '');
+        b.textContent = cat;
+        b.onclick = () => { state.category = cat; renderCategories(); renderProducts(); };
+        nav.appendChild(b);
+      });
+    }
+
+    // ========= PRODUTOS =========
+    function productCard(p){
+      const wrap = document.createElement('article');
+      wrap.className = 'card';
+      wrap.innerHTML = `
+        <img class="thumb" src="${p.image}" alt="${p.name}">
+        <div class="pad">
+          <h4 class="title">${p.name}</h4>
+          <p class="desc">${p.desc||''}</p>
+          <div class="priceRow">
+            <span class="price">${formatBRL(p.price)}</span>
+            <div class="qty">
+              <button type="button">−</button>
+              <input type="number" min="1" value="1"/>
+              <button type="button">+</button>
+            </div>
+          </div>
           <button class="addBtn">Adicionar</button>
         </div>
-      </div>`;
-    d.querySelector('.addBtn').onclick=()=>add(p);
-    g.appendChild(d);
-  });
-}
-function add(p){
-  const f=cart.find(i=>i.id===p.id);
-  if(f)f.q++;else cart.push({...p,q:1});
-  update();
-  if(isMobile())openCart();
-}
-function update(){
-  const b=document.getElementById('cartItems');b.innerHTML='';
-  let t=0,q=0;
-  cart.forEach(i=>{
-    t+=i.price*i.q;q+=i.q;
-    b.innerHTML+=`<div class="line"><div>${i.q}x ${i.name}</div><div>${brl(i.price*i.q)}</div></div>`;
-  });
-  document.getElementById('total').innerText=brl(t);
-  const badge=document.getElementById('badge');
-  badge.style.display=q?'grid':'none';badge.innerText=q;
-}
-function openCart(){document.getElementById('cart').classList.add('open')}
-function toggleCart(){document.getElementById('cart').classList.toggle('open')}
-function clearCart(){cart=[];update();toggleCart()}
-function send(){
-  let txt='Pedido:%0A';
-  cart.forEach(i=>txt+=`${i.q}x ${i.name}%0A`);
-  window.open(`https://wa.me/${WHATSAPP_PHONE}?text=${txt}`);
-}
-render();
-</script>
+      `;
+      const [minus, input, plus] = wrap.querySelectorAll('.qty>*');
+      minus.onclick = ()=>{ input.value = Math.max(1, (parseInt(input.value)||1) - 1); };
+      plus.onclick  = ()=>{ input.value = (parseInt(input.value)||1) + 1; };
+      wrap.querySelector('.addBtn').onclick = ()=> addToCart(p, parseInt(input.value)||1);
+      return wrap;
+    }
 
+    function renderProducts(){
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+      const list = state.category==='Todos' ? PRODUCTS : PRODUCTS.filter(p=>p.category===state.category);
+      list.forEach(p=>grid.appendChild(productCard(p)));
+    }
+
+    // ========= CARRINHO =========
+    function addToCart(product, qty=1){
+      const f = state.cart.find(i=>i.id===product.id);
+      if(f){ f.qty += qty; }
+      else{ state.cart.push({id:product.id, name:product.name, price:product.price, qty}); }
+      renderCart();
+      if(isMobile()) setCartOpen(true); // abre ao adicionar item
+    }
+
+    function removeFromCart(id){
+      state.cart = state.cart.filter(i=>i.id!==id);
+      renderCart();
+    }
+
+    function updateQty(id, delta){
+      const it = state.cart.find(i=>i.id===id);
+      if(!it) return;
+      it.qty = Math.max(1, it.qty + delta);
+      renderCart();
+    }
+
+    function cartLine(it){
+      const line = document.createElement('div');
+      line.className = 'line';
+      line.innerHTML = `
+        <div>
+          <div class="name">${it.name}</div>
+          <div class="unit">${formatBRL(it.price)} • qtd ${it.qty}</div>
+        </div>
+        <div class="subtotal">${formatBRL(it.price*it.qty)}</div>
+        <div style="display:flex;gap:6px">
+          <button class="chip" type="button">−</button>
+          <button class="chip" type="button">+</button>
+          <button class="chip" type="button" style="background:#1f1212;color:#ffbaba;border-color:#3a1616">×</button>
+        </div>
+      `;
+      const [minus, plus, del] = line.querySelectorAll('button');
+      minus.onclick = ()=>updateQty(it.id, -1);
+      plus.onclick  = ()=>updateQty(it.id,  1);
+      del.onclick   = ()=>removeFromCart(it.id);
+      return line;
+    }
+
+    function calcTotal(){
+      return state.cart.reduce((s,i)=>s+i.price*i.qty,0);
+    }
+
+    function updateBadge(){
+      const badge = document.getElementById('cartBadge');
+      const qty = state.cart.reduce((s,i)=>s+i.qty,0);
+      if(qty>0){
+        badge.style.display = 'grid';
+        badge.textContent = String(qty);
+      }else{
+        badge.style.display = 'none';
+      }
+    }
+
+    function renderCart(){
+      const box = document.getElementById('cartItems');
+      box.innerHTML = '';
+      state.cart.forEach(i=>box.appendChild(cartLine(i)));
+
+      const total = calcTotal();
+      document.getElementById('total').textContent = formatBRL(total);
+
+      const has = state.cart.length > 0;
+      document.getElementById('sendBtn').disabled = !has;   // ✅ bloqueia sem itens
+      document.getElementById('clearBtn').disabled = !has;
+
+      updateBadge();
+    }
+
+    // ========= ABRIR / FECHAR CARRINHO (mobile) =========
+    const cartBox = document.getElementById('cartBox');
+    const overlay = document.getElementById('overlay');
+    const fabCart = document.getElementById('fabCart');
+    const toggleCartBtn = document.getElementById('toggleCartBtn');
+
+    function setCartOpen(open){
+      cartBox.classList.toggle('open', open);
+      overlay.classList.toggle('show', open && isMobile());
+    }
+
+    // Só abre por botão flutuante
+    fabCart.addEventListener('click', ()=> setCartOpen(true));
+    toggleCartBtn.addEventListener('click', ()=> setCartOpen(false));
+    overlay.addEventListener('click', ()=> setCartOpen(false));
+
+    // Desktop sempre aberto; Mobile sempre fechado no início
+    function applyLayout(){
+      if(isMobile()){
+        setCartOpen(false);
+      }else{
+        setCartOpen(true);
+        overlay.classList.remove('show');
+      }
+    }
+    window.addEventListener('resize', applyLayout);
+
+    // ========= WHATSAPP =========
+    function buildWhatsAppText(){
+      const lines = [];
+      lines.push('🧾 *Pedido – Quero Burguer*');
+      lines.push('');
+      state.cart.forEach(i => lines.push(`• ${i.qty}x ${i.name} — ${formatBRL(i.price*i.qty)}`));
+      lines.push('');
+      lines.push(`Total: *${formatBRL(calcTotal())}*`);
+
+      const name = document.getElementById('customerName').value.trim();
+      const phone = normalizeDigits(document.getElementById('customerPhone').value);
+      const address = document.getElementById('customerAddress').value.trim();
+      const pay = document.getElementById('paymentMethod').value;
+      const obs = document.getElementById('noteText').value.trim();
+
+      lines.push('');
+      if(name) lines.push(`Nome: ${name}`);
+      if(phone) lines.push(`Celular: ${phone}`);
+      if(address) lines.push(`Endereço: ${address}`);
+      if(pay) lines.push(`Pagamento: ${pay}`);
+      if(obs) lines.push(`Obs.: ${obs}`);
+
+      return encodeURIComponent(lines.join('\n'));
+    }
+
+    function openWhatsApp(text){
+      const phone = normalizeDigits(WHATSAPP_PHONE);
+      if(!phone || phone.length < 10){
+        alert('Número do WhatsApp inválido.');
+        return;
+      }
+      window.open(`https://wa.me/${phone}?text=${text}`,'_blank');
+    }
+
+    function send(){
+      // ✅ segurança extra: impede enviar vazio mesmo se mexerem no HTML
+      if(state.cart.length === 0){
+        alert('Adicione pelo menos 1 item no carrinho.');
+        return;
+      }
+      openWhatsApp(buildWhatsAppText());
+    }
+
+    function clearCart(){
+      state.cart = [];
+      renderCart();
+      if(isMobile()) setCartOpen(false);
+    }
+
+    document.getElementById('sendBtn').addEventListener('click', send);
+    document.getElementById('clearBtn').addEventListener('click', clearCart);
+
+    // ========= INIT =========
+    renderCategories();
+    renderProducts();
+    renderCart();
+    applyLayout();
+  </script>
 </body>
 </html>
