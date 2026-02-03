@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Quero Burguer â€“ CardÃ¡pio</title>
+  <title>Quero Burguer – Cardápio</title>
 
   <style>
     :root{
@@ -61,7 +61,7 @@
       justify-content:space-between;
     }
 
-    /* No PC: sem caixa atrÃ¡s (clean) */
+    /* No PC: sem caixa atrás (clean) */
     .nav{
       display:flex;
       gap:10px;
@@ -113,7 +113,7 @@
       opacity:.7;
     }
 
-    /* No mobile: deixa a Ã¡rea â€œflutuante/opacaâ€ e empilha */
+    /* No mobile: deixa a área “flutuante/opaca” e empilha */
     @media (max-width: 960px){
       .catrow{
         flex-direction:column;
@@ -146,7 +146,7 @@
     }
     @media (max-width: 960px){ .wrap{grid-template-columns:1fr} }
 
-    /* Lista de seÃ§Ãµes por categoria */
+    /* Lista de seções por categoria */
     .sectionTitle{
       margin: 18px 0 10px;
       font-size: 16px;
@@ -294,7 +294,7 @@
       #toggleCartBtn{ display:none; }
     }
 
-    /* BotÃ£o flutuante (mobile) */
+    /* Botão flutuante (mobile) */
     .fabCart{
       position:fixed;right:16px;bottom:16px;
       width:58px;height:58px;border-radius:18px;
@@ -344,7 +344,7 @@
 
       <div class="brand">
         <h1>Quero Burguer</h1>
-        <p>CardÃ¡pio digital com pedido via WhatsApp</p>
+        <p>Cardápio digital com pedido via WhatsApp</p>
       </div>
     </div>
 
@@ -357,7 +357,7 @@
             <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2"/>
             <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
           </svg>
-          <input id="searchInput" type="search" placeholder="Buscar no cardÃ¡pio..." />
+          <input id="searchInput" type="search" placeholder="Buscar no cardápio..." />
         </div>
       </div>
     </div>
@@ -366,7 +366,7 @@
   <div class="overlay" id="overlay"></div>
 
   <main class="wrap">
-    <!-- Agora o conteÃºdo vai ser renderizado como SEÃ‡Ã•ES -->
+    <!-- Agora o conteúdo vai ser renderizado como SEÇÕES -->
     <section id="productGrid"></section>
 
     <aside class="cart" id="cartBox">
@@ -379,15 +379,15 @@
 
       <div class="note">
         <input id="customerName" placeholder="Nome do cliente" />
-        <input id="customerPhone" placeholder="Celular (DDD + nÃºmero)" inputmode="numeric" />
-        <input id="customerAddress" placeholder="EndereÃ§o (Rua, nÃºmero, bairro)" />
+        <input id="customerPhone" placeholder="Celular (DDD + número)" inputmode="numeric" />
+        <input id="customerAddress" placeholder="Endereço (Rua, número, bairro)" />
         <select id="paymentMethod">
           <option value="Dinheiro">Dinheiro</option>
           <option value="Pix">Pix</option>
-          <option value="CartÃ£o (crÃ©dito)">CartÃ£o (crÃ©dito)</option>
-          <option value="CartÃ£o (dÃ©bito)">CartÃ£o (dÃ©bito)</option>
+          <option value="Cartão (crédito)">Cartão (crédito)</option>
+          <option value="Cartão (débito)">Cartão (débito)</option>
         </select>
-        <textarea id="noteText" placeholder="ObservaÃ§Ã£o: sem cebola, ponto da carne, sem gelo..."></textarea>
+        <textarea id="noteText" placeholder="Observação: sem cebola, ponto da carne, sem gelo..."></textarea>
       </div>
 
       <div class="totals">
@@ -395,7 +395,7 @@
       </div>
 
       <div class="actions">
-        <button class="btn whatsapp" id="sendBtn" disabled>Finalizar Pedido</button>
+        <button class="btn whatsapp" id="sendBtn" disabled>Enviar WhatsApp</button>
         <button class="btn clear" id="clearBtn" disabled>Limpar carrinho</button>
       </div>
     </aside>
@@ -414,18 +414,18 @@
   <script>
     // ========= CONFIG =========
     const WHATSAPP_PHONE = '5521992497289';
-    const SERVER_URL = 'https://tech-velvet-ipod-awareness.trycloudflare.com';
+    const SERVER_URL = 'https://leon-doctrine-functional-canberra.trycloudflare.com';
 
     // ========= PRODUTOS =========
     const PRODUCTS = [
-      { id:'xsmash', name:'Quero Smash 140g', price:11.90, category:'Lanches', desc:'PÃ£o brioche, 140g smash, queijo prato e maionese da casa.', image:'images/smash.jpg' },
+      { id:'xsmash', name:'Quero Smash 140g', price:11.90, category:'Lanches', desc:'Pão brioche, 140g smash, queijo prato e maionese da casa.', image:'images/smash.jpg' },
       { id:'xbacon', name:'Quero Bacon', price:18.90, category:'Lanches', desc:'Carne 160g, bacon crocante, cheddar e molho especial.', image:'images/bacon.jpg' },
-      { id:'combofamilia2', name:'Combo FamÃ­lia 2', price:70.90, category:'Combos', desc:'4 lanches + batata grande turbinada + refri 2l.', image:'images/combof2.jpeg' },
-      { id:'combofamilia1', name:'Combo FamÃ­lia 1', price:59.90, category:'Combos', desc:'2 lanches + 2 batatas + 2 bebidas.', image:'images/combof1.jpeg' },
-      { id:'batatam', name:'Batata Frita MÃ©dia', price:18.90, category:'Acompanhamentos', desc:'Batata Crocante.', image:'images/batatam.jpeg' },
+      { id:'combofamilia2', name:'Combo Família 2', price:70.90, category:'Combos', desc:'4 lanches + batata grande turbinada + refri 2l.', image:'images/combof2.jpeg' },
+      { id:'combofamilia1', name:'Combo Família 1', price:59.90, category:'Combos', desc:'2 lanches + 2 batatas + 2 bebidas.', image:'images/combof1.jpeg' },
+      { id:'batatam', name:'Batata Frita Média', price:18.90, category:'Acompanhamentos', desc:'Batata Crocante.', image:'images/batatam.jpeg' },
       { id:'batatag', name:'Batata Frita Grande', price:24.90, category:'Acompanhamentos', desc:'Batata Crocante.', image:'images/batatag.jpeg' },
-      { id:'guaramor', name:'Guaramor 250ml', price:4.90, category:'Bebidas', desc:'GuaranÃ¡ 250ml.', image:'images/guaramor.jpg' },
-      { id:'batatamtb', name:'Batata Turbinada MÃ©dia', price:23.90, category:'Acompanhamentos', desc:'Inventar algo depois.', image:'images/batatag1.jpeg' },
+      { id:'guaramor', name:'Guaramor 250ml', price:4.90, category:'Bebidas', desc:'Guaraná 250ml.', image:'images/guaramor.jpg' },
+      { id:'batatamtb', name:'Batata Turbinada Média', price:23.90, category:'Acompanhamentos', desc:'Inventar algo depois.', image:'images/batatag1.jpeg' },
       { id:'batatagtb', name:'Batata Turbinada Grande', price:27.90, category:'Acompanhamentos', desc:'Inventar algo depois.', image:'images/batatag2.jpeg' },
     ];
 
@@ -478,7 +478,7 @@
           <div class="priceRow">
             <span class="price">${formatBRL(p.price)}</span>
             <div class="qty">
-              <button type="button">âˆ’</button>
+              <button type="button">−</button>
               <input type="number" min="1" value="1"/>
               <button type="button">+</button>
             </div>
@@ -577,13 +577,13 @@
       line.innerHTML = `
         <div>
           <div class="name">${it.name}</div>
-          <div class="unit">${formatBRL(it.price)} â€¢ qtd ${it.qty}</div>
+          <div class="unit">${formatBRL(it.price)} • qtd ${it.qty}</div>
         </div>
         <div class="subtotal">${formatBRL(it.price*it.qty)}</div>
         <div style="display:flex;gap:6px">
-          <button class="chip" type="button">âˆ’</button>
+          <button class="chip" type="button">−</button>
           <button class="chip" type="button">+</button>
-          <button class="chip" type="button" style="background:#1f1212;color:#ffbaba;border-color:#3a1616">Ã—</button>
+          <button class="chip" type="button" style="background:#1f1212;color:#ffbaba;border-color:#3a1616">×</button>
         </div>
       `;
       const [minus, plus, del] = line.querySelectorAll('button');
@@ -656,20 +656,20 @@
       const pay = document.getElementById('paymentMethod').value;
       const obs = document.getElementById('noteText').value.trim();
       return {
-        name: name || 'NÃ£o informado',
-        phone: phone || 'NÃ£o informado',
-        address: address || 'NÃ£o informado',
-        pay: pay || 'NÃ£o informado',
-        obs: obs || 'Sem observaÃ§Ã£o'
+        name: name || 'Não informado',
+        phone: phone || 'Não informado',
+        address: address || 'Não informado',
+        pay: pay || 'Não informado',
+        obs: obs || 'Sem observação'
       };
     }
 
     function buildWhatsAppText(){
       const lines = [];
-      lines.push('ðŸ§¾ *Pedido â€“ Quero Burguer*');
+      lines.push('🧾 *Pedido – Quero Burguer*');
       lines.push('');
 
-      state.cart.forEach(i => lines.push(`â€¢ ${i.qty}x ${i.name} â€” ${formatBRL(i.price*i.qty)}`));
+      state.cart.forEach(i => lines.push(`• ${i.qty}x ${i.name} — ${formatBRL(i.price*i.qty)}`));
 
       lines.push('');
       lines.push(`Total: *${formatBRL(calcTotal())}*`);
@@ -678,7 +678,7 @@
       lines.push('');
       lines.push(`Nome: ${c.name}`);
       lines.push(`Celular: ${c.phone}`);
-      lines.push(`EndereÃ§o: ${c.address}`);
+      lines.push(`Endereço: ${c.address}`);
       lines.push(`Pagamento: ${c.pay}`);
       lines.push(`Obs.: ${c.obs}`);
 
@@ -705,7 +705,7 @@
       }
       const phone = normalizeDigits(WHATSAPP_PHONE);
       if(!phone || phone.length < 10){
-        alert('NÃºmero do WhatsApp invÃ¡lido.');
+        alert('Número do WhatsApp inválido.');
         return;
       }
 
@@ -755,4 +755,3 @@
   </script>
 </body>
 </html>
-
