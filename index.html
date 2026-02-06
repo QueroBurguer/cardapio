@@ -223,7 +223,7 @@
     /* Carrinho (desktop) */
     .cart{
       position:sticky;
-      top: calc(var(--headerH, 130px) + 12px); /* header + espacinho */
+      top: calc(var(--headerH, 130px) + 12px);
       align-self:start;
       background:rgba(20,21,26,.92);
       border:1px solid rgba(255,255,255,.08);
@@ -276,7 +276,7 @@
 
     /* Mobile: carrinho escondido quando fechado */
     @media (max-width: 960px){
-      main.wrap{ padding-bottom: 120px; }
+      main.wrap{ padding-bottom: 170px; }
       .cart{
         position:fixed;left:0;right:0;bottom:0;top:auto;
         border-radius:18px 18px 0 0;
@@ -302,7 +302,7 @@
       box-shadow:var(--shadow);
       display:none;place-items:center;
       cursor:pointer;z-index:40;
-      transition: background .2s ease, color .2s ease, border-color .2s ease;
+      transition: background .2s ease, color .2s ease, border-color .2s ease, bottom .2s ease;
     }
     .fabCart svg{ width:26px;height:26px; }
     @media (max-width: 960px){ .fabCart{ display:grid; } }
@@ -342,7 +342,7 @@
       position:fixed;
       left:50%; top:50%;
       transform:translate(-50%,-50%);
-      width:min(740px, calc(100vw - 28px));
+      width:min(860px, calc(100vw - 28px));
       max-height:min(86vh, 860px);
       background:rgba(20,21,26,.96);
       border:1px solid rgba(255,255,255,.10);
@@ -359,7 +359,46 @@
     }
     .modalTitle{ font-weight:900; font-size:16px; }
     .modalSub{ color:var(--muted); font-size:12px; margin-top:2px; }
-    .modalBody{ padding:12px 14px; overflow:auto; }
+
+    /* NOVO: layout 2 colunas (imagem+desc à esquerda) */
+    .modalBody{
+      padding:12px 14px;
+      overflow:auto;
+    }
+    .modalLayout{
+      display:grid;
+      grid-template-columns: 280px 1fr;
+      gap:14px;
+      align-items:start;
+    }
+    .modalLeft{
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      overflow:hidden;
+    }
+    .modalLeft img{
+      width:100%;
+      aspect-ratio: 4/3;
+      object-fit:cover;
+      display:block;
+      background:#0c0c0d;
+    }
+    .modalLeftPad{
+      padding:10px;
+    }
+    .modalLeftTitle{
+      font-weight:900;
+      font-size:14px;
+      margin:0 0 6px;
+    }
+    .modalLeftDesc{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.35;
+      margin:0;
+    }
+
     .modalSection{ margin-bottom:14px; }
     .modalLabel{ font-weight:900; font-size:13px; margin-bottom:6px; }
     .modalHint{ color:var(--muted); font-size:12px; }
@@ -399,8 +438,58 @@
     .modalTotal{ display:grid; gap:2px; }
     .modalPrice{ font-weight:900; font-size:16px; }
 
+    @media (max-width: 760px){
+      .modalLayout{ grid-template-columns: 1fr; }
+    }
     @media (max-width: 520px){
       .optionsGrid{ grid-template-columns: 1fr; }
+    }
+
+    /* ===================== BARRA "FINALIZAR" (mobile) ===================== */
+    .checkoutBar{
+      position:fixed;
+      left:14px; right:14px;
+      bottom: 86px; /* acima do carrinho (quando fechado) + fab */
+      z-index:45;
+      display:none;
+      background: rgba(20,21,26,.72);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:16px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding:10px;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    .checkoutLeft{
+      display:grid;
+      gap:2px;
+      min-width:0;
+    }
+    .checkoutLeft .label{
+      font-size:12px;
+      color: rgba(255,255,255,.65);
+    }
+    .checkoutLeft .value{
+      font-weight:900;
+      font-size:14px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .checkoutBtn{
+      border:0;
+      border-radius:14px;
+      padding:10px 14px;
+      font-weight:900;
+      cursor:pointer;
+      background: var(--primary);
+      color: var(--primary-contrast);
+      white-space:nowrap;
+    }
+    @media (max-width: 960px){
+      .checkoutBar.show{ display:flex; }
     }
   </style>
 </head>
@@ -409,7 +498,6 @@
   <header>
     <div class="topbar">
       <div class="logoBox">
-        <!-- SUA LOGO AQUI: coloque o arquivo em images/logo.png -->
         <img src="images/logo.jpeg" alt="Quero Burguer"
              onerror="this.style.display='none'; this.parentElement.innerHTML='<b style=&quot;color:#ffb000&quot;>QB</b>';">
       </div>
@@ -438,7 +526,6 @@
   <div class="overlay" id="overlay"></div>
 
   <main class="wrap">
-    <!-- Agora o conteúdo vai ser renderizado como SEÇÕES -->
     <section id="productGrid"></section>
 
     <aside class="cart" id="cartBox">
@@ -483,7 +570,16 @@
     </svg>
   </button>
 
-  <!-- ================= MODAL (BEBIDA + ADICIONAIS) ================= -->
+  <!-- Barra mobile "Finalizar" -->
+  <div class="checkoutBar" id="checkoutBar">
+    <div class="checkoutLeft">
+      <div class="label">Seu pedido</div>
+      <div class="value" id="checkoutTotal">R$ 0,00</div>
+    </div>
+    <button class="checkoutBtn" id="checkoutBtn" type="button">Finalizar pedido</button>
+  </div>
+
+  <!-- MODAL -->
   <div class="modalOverlay" id="customOverlay"></div>
 
   <div class="modal" id="customModal" aria-hidden="true">
@@ -496,21 +592,35 @@
     </div>
 
     <div class="modalBody">
-      <div class="modalSection">
-        <div class="modalLabel">Bebida</div>
-        <div class="modalHint">Escolha 1 (opcional)</div>
-        <div class="optionsGrid" id="drinkOptions"></div>
-      </div>
+      <div class="modalLayout">
+        <!-- ESQUERDA: imagem + desc -->
+        <div class="modalLeft">
+          <img id="customImage" src="" alt="Produto">
+          <div class="modalLeftPad">
+            <div class="modalLeftTitle" id="customLeftTitle">—</div>
+            <p class="modalLeftDesc" id="customLeftDesc">—</p>
+          </div>
+        </div>
 
-      <div class="modalSection">
-        <div class="modalLabel">Adicionais</div>
-        <div class="modalHint">Pode marcar vários</div>
-        <div class="optionsGrid" id="addonOptions"></div>
-      </div>
+        <!-- DIREITA: opções -->
+        <div>
+          <div class="modalSection">
+            <div class="modalLabel">Bebida</div>
+            <div class="modalHint">Escolha 1 (opcional)</div>
+            <div class="optionsGrid" id="drinkOptions"></div>
+          </div>
 
-      <div class="modalSection">
-        <div class="modalLabel">Obs. deste lanche</div>
-        <input class="modalInput" id="itemNote" placeholder="Ex.: sem cebola, ponto da carne..." />
+          <div class="modalSection">
+            <div class="modalLabel">Adicionais</div>
+            <div class="modalHint">Pode marcar vários</div>
+            <div class="optionsGrid" id="addonOptions"></div>
+          </div>
+
+          <div class="modalSection">
+            <div class="modalLabel">Obs. deste lanche</div>
+            <input class="modalInput" id="itemNote" placeholder="Ex.: sem cebola, ponto da carne..." />
+          </div>
+        </div>
       </div>
     </div>
 
@@ -541,8 +651,7 @@
       { id:'batatagtb', name:'Batata Turbinada Grande', price:27.90, category:'Acompanhamentos', desc:'Inventar algo depois.', image:'images/batatag2.jpeg' },
     ];
 
-    // ========= ITENS DO MODAL (não aparecem nos produtos gerais) =========
-    // -> Edite aqui os preços e nomes dos adicionais/bebidas do lanche
+    // ========= ITENS DO MODAL =========
     const DRINK_OPTIONS = [
       { id:'coca_lata', name:'Coca-Cola Lata 350ml', price: 6.00 },
       { id:'guarana_lata', name:'Guaraná Lata 350ml', price: 5.50 },
@@ -559,11 +668,7 @@
     ];
 
     // ========= ESTADO =========
-    const state = {
-      category: 'Todos',
-      cart: [],
-      q: '' // texto de busca
-    };
+    const state = { category: 'Todos', cart: [], q: '' };
 
     const formatBRL = (n) => n.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
     const unique = (arr) => [...new Set(arr)];
@@ -580,6 +685,11 @@
     const cartBadge = document.getElementById('cartBadge');
     const searchInput = document.getElementById('searchInput');
 
+    // checkout bar (mobile)
+    const checkoutBar = document.getElementById('checkoutBar');
+    const checkoutTotal = document.getElementById('checkoutTotal');
+    const checkoutBtn = document.getElementById('checkoutBtn');
+
     // ========= CATEGORIAS =========
     function renderCategories(){
       const cats = ['Todos', ...unique(PRODUCTS.map(p=>p.category))];
@@ -595,7 +705,7 @@
       });
     }
 
-    // ========= MODAL (BEBIDA + ADICIONAIS) =========
+    // ========= MODAL =========
     const customOverlay = document.getElementById('customOverlay');
     const customModal   = document.getElementById('customModal');
     const customTitle   = document.getElementById('customTitle');
@@ -607,13 +717,12 @@
     const customCloseBtn  = document.getElementById('customCloseBtn');
     const customConfirmBtn= document.getElementById('customConfirmBtn');
 
-    const customUI = {
-      open: false,
-      product: null,
-      qty: 1,
-      drinkId: null,
-      addonIds: new Set(),
-    };
+    // NOVO: esquerda
+    const customImage = document.getElementById('customImage');
+    const customLeftTitle = document.getElementById('customLeftTitle');
+    const customLeftDesc = document.getElementById('customLeftDesc');
+
+    const customUI = { open:false, product:null, qty:1, drinkId:null, addonIds:new Set() };
 
     function setCustomOpen(open){
       customUI.open = open;
@@ -622,13 +731,13 @@
       customModal.setAttribute('aria-hidden', open ? 'false' : 'true');
 
       if(!open){
-        customUI.product = null;
-        customUI.qty = 1;
-        customUI.drinkId = null;
-        customUI.addonIds = new Set();
+        customUI.product=null; customUI.qty=1; customUI.drinkId=null; customUI.addonIds=new Set();
         itemNote.value = '';
         drinkBox.innerHTML = '';
         addonBox.innerHTML = '';
+        customImage.src = '';
+        customLeftTitle.textContent = '—';
+        customLeftDesc.textContent = '—';
       }
     }
 
@@ -676,7 +785,6 @@
 
         card.onclick = ()=>{
           if(type === 'drink'){
-            // 1 bebida (clicar no mesmo desmarca)
             customUI.drinkId = (customUI.drinkId === opt.id) ? null : opt.id;
           }else{
             if(customUI.addonIds.has(opt.id)) customUI.addonIds.delete(opt.id);
@@ -697,6 +805,12 @@
       customTitle.textContent = product.name;
       customSub.textContent = `Base: ${formatBRL(product.price)} • qtd ${customUI.qty}`;
 
+      // esquerda
+      customImage.src = product.image || '';
+      customImage.alt = product.name || 'Produto';
+      customLeftTitle.textContent = product.name || '—';
+      customLeftDesc.textContent = product.desc || 'Sem descrição.';
+
       renderOptionCards(drinkBox, DRINK_OPTIONS, 'drink');
       renderOptionCards(addonBox, ADDON_OPTIONS, 'addon');
       updateCustomPrice();
@@ -706,59 +820,9 @@
 
     customCloseBtn.onclick = ()=> setCustomOpen(false);
     customOverlay.onclick  = ()=> setCustomOpen(false);
-
-    // ESC fecha o modal
     document.addEventListener('keydown', (e)=>{
-      if(e.key === 'Escape' && customUI.open){
-        setCustomOpen(false);
-      }
+      if(e.key === 'Escape' && customUI.open) setCustomOpen(false);
     });
-
-    customConfirmBtn.onclick = ()=>{
-      if(!customUI.product) return;
-
-      const base = customUI.product.price;
-      const drink = DRINK_OPTIONS.find(d => d.id === customUI.drinkId) || null;
-
-      const addons = [...customUI.addonIds]
-        .map(id => ADDON_OPTIONS.find(a => a.id === id))
-        .filter(Boolean);
-
-      const addonsTotal = addons.reduce((s,a)=>s+a.price,0);
-      const drinkTotal = drink ? drink.price : 0;
-
-      const parts = [];
-      if(drink) parts.push(`Bebida: ${drink.name}`);
-      if(addons.length) parts.push(`Add: ${addons.map(a=>a.name).join(', ')}`);
-
-      const noteItem = itemNote.value.trim();
-      if(noteItem) parts.push(`Obs: ${noteItem}`);
-
-      const displayName = parts.length
-        ? `${customUI.product.name} (${parts.join(' • ')})`
-        : customUI.product.name;
-
-      const unitPriceFinal = base + addonsTotal + drinkTotal;
-
-      // id único para não "juntar" com outro lanche diferente
-      state.cart.push({
-        id: `${customUI.product.id}_${Date.now()}`,
-        name: displayName,
-        price: unitPriceFinal,
-        qty: customUI.qty,
-        meta: {
-          baseId: customUI.product.id,
-          baseName: customUI.product.name,
-          drink: drink ? {id: drink.id, name: drink.name, price: drink.price} : null,
-          addons: addons.map(a=>({id:a.id, name:a.name, price:a.price})),
-          noteItem: noteItem
-        }
-      });
-
-      renderCart();
-      if(isMobile()) setCartOpen(true);
-      setCustomOpen(false);
-    };
 
     // ========= PRODUTOS =========
     function productCard(p){
@@ -786,13 +850,12 @@
 
       wrap.querySelector('.addBtn').onclick = ()=>{
         const q = parseInt(input.value)||1;
-
-        // REGRA: só abre modal para Lanches
         if((p.category||'').toLowerCase() === 'lanches'){
           openCustomizer(p, q);
         }else{
           addToCart(p, q);
           if(isMobile()) setCartOpen(true);
+          showCheckoutBar();
         }
       };
 
@@ -807,14 +870,11 @@
     }
 
     function getFilteredProducts(){
-      // 1) categoria
       let list = PRODUCTS;
       if(state.category !== 'Todos'){
         list = list.filter(p => p.category === state.category);
       }
-      // 2) busca
-      list = list.filter(matchesSearch);
-      return list;
+      return list.filter(matchesSearch);
     }
 
     function renderProducts(){
@@ -822,8 +882,6 @@
       container.innerHTML = '';
 
       const filtered = getFilteredProducts();
-
-      // Se estiver em "Todos", agrupa por categoria (Lanches, Combos, etc.)
       const categoriesToShow = (state.category === 'Todos')
         ? unique(PRODUCTS.map(p=>p.category))
         : [state.category];
@@ -858,7 +916,6 @@
 
     // ========= CARRINHO =========
     function addToCart(product, qty=1){
-      // Para produtos normais, junta pelo id
       const f = state.cart.find(i=>i.id===product.id);
       if(f){ f.qty += qty; }
       else{ state.cart.push({id:product.id, name:product.name, price:product.price, qty}); }
@@ -919,6 +976,18 @@
       fabCart.classList.toggle('empty', !has);
     }
 
+    function updateCheckoutBar(){
+      const has = state.cart.length > 0;
+      checkoutTotal.textContent = formatBRL(calcTotal());
+      checkoutBar.classList.toggle('show', has && isMobile());
+    }
+
+    function showCheckoutBar(){
+      updateCheckoutBar();
+      if(!isMobile()) return;
+      // aparece e fica (enquanto tiver itens). Se quiser "sumir depois", eu faço.
+    }
+
     function renderCart(){
       const box = document.getElementById('cartItems');
       box.innerHTML = '';
@@ -932,6 +1001,7 @@
 
       updateBadge();
       updateFabColor();
+      updateCheckoutBar();
     }
 
     // ========= ABRIR / FECHAR (mobile) =========
@@ -944,6 +1014,15 @@
     toggleCartBtn.addEventListener('click', ()=> setCartOpen(false));
     overlay.addEventListener('click', ()=> setCartOpen(false));
 
+    checkoutBtn.addEventListener('click', ()=>{
+      setCartOpen(true);
+      // foca no nome pra facilitar
+      setTimeout(()=>{
+        const el = document.getElementById('customerName');
+        el?.focus?.();
+      }, 150);
+    });
+
     function applyLayout(){
       if(isMobile()){
         setCartOpen(false);
@@ -951,8 +1030,57 @@
         setCartOpen(true);
         overlay.classList.remove('show');
       }
+      updateCheckoutBar();
     }
     window.addEventListener('resize', applyLayout);
+
+    // ========= MODAL CONFIRM =========
+    customConfirmBtn.onclick = ()=>{
+      if(!customUI.product) return;
+
+      const base = customUI.product.price;
+      const drink = DRINK_OPTIONS.find(d => d.id === customUI.drinkId) || null;
+
+      const addons = [...customUI.addonIds]
+        .map(id => ADDON_OPTIONS.find(a => a.id === id))
+        .filter(Boolean);
+
+      const addonsTotal = addons.reduce((s,a)=>s+a.price,0);
+      const drinkTotal = drink ? drink.price : 0;
+
+      const parts = [];
+      if(drink) parts.push(`Bebida: ${drink.name}`);
+      if(addons.length) parts.push(`Add: ${addons.map(a=>a.name).join(', ')}`);
+
+      const noteItem = itemNote.value.trim();
+      if(noteItem) parts.push(`Obs: ${noteItem}`);
+
+      const displayName = parts.length
+        ? `${customUI.product.name} (${parts.join(' • ')})`
+        : customUI.product.name;
+
+      const unitPriceFinal = base + addonsTotal + drinkTotal;
+
+      state.cart.push({
+        id: `${customUI.product.id}_${Date.now()}`,
+        name: displayName,
+        price: unitPriceFinal,
+        qty: customUI.qty,
+        meta: {
+          baseId: customUI.product.id,
+          baseName: customUI.product.name,
+          drink: drink ? {id: drink.id, name: drink.name, price: drink.price} : null,
+          addons: addons.map(a=>({id:a.id, name:a.name, price:a.price})),
+          noteItem: noteItem
+        }
+      });
+
+      renderCart();
+      setCustomOpen(false);
+
+      // no mobile: mostra a barra "Finalizar pedido"
+      showCheckoutBar();
+    };
 
     // ========= WHATSAPP =========
     function getCustomerFields(){
@@ -974,9 +1102,7 @@
       const lines = [];
       lines.push('🧾 *Pedido – Quero Burguer*');
       lines.push('');
-
       state.cart.forEach(i => lines.push(`• ${i.qty}x ${i.name} — ${formatBRL(i.price*i.qty)}`));
-
       lines.push('');
       lines.push(`Total: *${formatBRL(calcTotal())}*`);
 
@@ -1000,12 +1126,7 @@
         address: c.address,
         payment: c.pay,
         note: c.obs,
-        items: state.cart.map(i => ({
-          name: i.name,
-          qty: i.qty,
-          price: i.price,
-          meta: i.meta || null
-        }))
+        items: state.cart.map(i => ({ name: i.name, qty: i.qty, price: i.price, meta: i.meta || null }))
       };
     }
 
@@ -1029,7 +1150,7 @@
         }).catch(()=>{});
       }catch(e){}
 
-      // WhatsApp (mobile sem bloqueio)
+      // WhatsApp
       const url = `https://wa.me/${phone}?text=${buildWhatsAppText()}`;
       if(isMobile()){
         window.location.href = url;
@@ -1037,7 +1158,6 @@
         window.open(url, '_blank');
       }
 
-      // finaliza
       state.cart = [];
       renderCart();
       if(isMobile()) setCartOpen(false);
@@ -1052,13 +1172,13 @@
     sendBtn.addEventListener('click', send);
     clearBtn.addEventListener('click', clearCart);
 
-    // Busca (filtro em tempo real)
+    // Busca
     searchInput.addEventListener('input', () => {
       state.q = searchInput.value;
       renderProducts();
     });
 
-    // ========= INIT =========
+    // INIT
     renderCategories();
     renderProducts();
     renderCart();
