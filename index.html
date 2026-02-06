@@ -595,12 +595,20 @@
 
   <div class="modal" id="customModal" aria-hidden="true">
     <div class="modalHeader">
-      <div>
-        <div class="modalTitle" id="customTitle">Personalizar</div>
-        <div class="modalSub" id="customSub">Escolha bebida e adicionais</div>
-      </div>
-      <button class="chip" type="button" id="customCloseBtn">Fechar</button>
-    </div>
+  <div style="min-width:0">
+    <div class="modalTitle" id="customTitle">Personalizar</div>
+    <div class="modalSub" id="customSub">Escolha bebida e adicionais</div>
+  </div>
+
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="chip" type="button" id="customCloseBtn">Fechar</button>
+    <button class="chip" type="button" id="customConfirmBtn"
+      style="background:var(--primary);color:var(--primary-contrast);border-color:transparent;font-weight:900;">
+      Adicionar
+    </button>
+  </div>
+</div>
+
 
     <div class="modalBody">
       <div class="modalLayout">
