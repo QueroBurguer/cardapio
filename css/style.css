@@ -873,6 +873,25 @@ header {
     }
 }
 
+@media (max-width: 600px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .pad {
+        padding: 10px;
+    }
+
+    .title {
+        font-size: 13px;
+    }
+
+    .price {
+        font-size: 14px;
+    }
+}
+
 @media (min-width: 961px) {
     #toggleCartBtn {
         display: none;
