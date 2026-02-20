@@ -1,12 +1,14 @@
 // ========= CONFIG =========
 const WHATSAPP_PHONE = '5521992497289';
-const SERVER_URL = 'https://subsection-pushed-plate-begin.trycloudflare.com';
 
 // ========= ESTADO =========
 const state = {
     category: 'Todos',
     cart: [],
-    q: ''
+    q: '',
+    shipping: 0,
+    distance: 0,
+    addressCoords: null
 };
 
 // ========= UTILITÁRIOS =========
@@ -29,6 +31,12 @@ const dom = {
     totalDisplay: document.getElementById('total'),
     productGrid: document.getElementById('productGrid'),
     categoryChips: document.getElementById('categoryChips'),
+
+    // Shipping
+    subtotalVal: document.getElementById('subtotalVal'),
+    shippingVal: document.getElementById('shippingVal'),
+    distanceVal: document.getElementById('distanceVal'),
+    calcShippingBtn: document.getElementById('calcShippingBtn'),
 
     // Modal
     customModal: document.getElementById('customModal'),
@@ -260,8 +268,19 @@ function renderCart() {
         dom.cartItems.appendChild(line);
     });
 
-    const total = state.cart.reduce((speech, i) => speech + (i.price * i.qty), 0);
-    dom.totalDisplay.textContent = formatBRL(total);
+    const subtotal = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    const total = subtotal + (state.shipping || 0);
+
+    if (dom.subtotalVal) dom.subtotalVal.textContent = formatBRL(subtotal);
+    if (dom.totalDisplay) dom.totalDisplay.textContent = formatBRL(total);
+
+    if (state.shipping > 0 && dom.shippingVal) {
+        dom.shippingVal.textContent = formatBRL(state.shipping);
+        dom.distanceVal.textContent = `(${state.distance.toFixed(1)}km)`;
+    } else if (dom.shippingVal) {
+        dom.shippingVal.textContent = '--';
+        dom.distanceVal.textContent = '';
+    }
 
     const hasItems = state.cart.length > 0;
     dom.sendBtn.disabled = !hasItems;
@@ -277,6 +296,96 @@ function renderCart() {
         dom.cartBadge.style.display = 'none';
         dom.fabCart.classList.remove('filled');
     }
+}
+
+// ========= CÁLCULO DE FRETE (NOMINATIM / HAVERSINE) =========
+
+function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const d = R * c;
+    return d;
+}
+
+function deg2rad(deg) {
+    return deg * (Math.PI / 180);
+}
+
+async function fetchCoordinates(address) {
+    try {
+        const query = `${address}, ${SHIPPING.city}, Brasil`;
+        const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
+
+        const res = await fetch(url, { headers: { 'User-Agent': 'QueroBurguerApp/1.0' } });
+        const data = await res.json();
+
+        if (data && data.length > 0) {
+            return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
+        }
+        return null;
+    } catch (error) {
+        console.error("Erro ao buscar coordenadas", error);
+        return null;
+    }
+}
+
+if (dom.calcShippingBtn) {
+    dom.calcShippingBtn.addEventListener('click', async () => {
+        const address = dom.customerAddress.value.trim();
+        if (!address || address.length < 5) {
+            alert('Digite o endereço completo (Rua, Número, Bairro) para calcular.');
+            return;
+        }
+
+        const originalText = dom.calcShippingBtn.textContent;
+        dom.calcShippingBtn.textContent = '...';
+        dom.calcShippingBtn.disabled = true;
+
+        const coords = await fetchCoordinates(address);
+
+        if (coords) {
+            // Calcula distância linear
+            const d = getDistanceFromLatLonInKm(SHIPPING.storeLat, SHIPPING.storeLng, coords.lat, coords.lon);
+
+            // Margem de segurança de 30%
+            const safeDist = d * 1.3;
+            state.distance = safeDist;
+
+            // Regra: Mínimo basePrice. Acima de baseKm, cobra pricePerKm
+            let cost = SHIPPING.basePrice;
+
+            if (safeDist > SHIPPING.baseKm) {
+                const extraKm = safeDist - SHIPPING.baseKm;
+                cost += extraKm * SHIPPING.pricePerKm;
+            }
+
+            // Arredonda para 2 casas
+            cost = Math.ceil(cost * 100) / 100;
+
+            state.shipping = cost;
+            state.addressCoords = coords;
+
+            renderCart();
+            dom.calcShippingBtn.textContent = 'OK';
+        } else {
+            alert('Endereço não encontrado. Verifique se digitou corretamento (Rua, Número e Bairro)');
+            state.shipping = 0;
+            state.distance = 0;
+            renderCart();
+            dom.calcShippingBtn.textContent = 'Erro';
+        }
+
+        setTimeout(() => {
+            dom.calcShippingBtn.disabled = false;
+            dom.calcShippingBtn.textContent = originalText;
+        }, 2000);
+    });
 }
 
 // ========= MODAL (PERSONALIZAÇÃO) =========
@@ -462,8 +571,17 @@ function buildWhatsAppText() {
     });
 
     lines.push('------------------------------');
-    const total = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
-    lines.push(`💰 *TOTAL: ${formatBRL(total)}*`);
+
+    const subtotal = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    lines.push(`Subtotal: ${formatBRL(subtotal)}`);
+
+    if (state.shipping > 0) {
+        lines.push(`Entrega (${state.distance.toFixed(1)}km): ${formatBRL(state.shipping)}`);
+        lines.push(`*TOTAL FINAL: ${formatBRL(subtotal + state.shipping)}*`);
+    } else {
+        lines.push(`*TOTAL: ${formatBRL(subtotal)}*`);
+        lines.push(`(Frete não calculado ou a combinar)`);
+    }
 
     const c = getCustomerFields();
     lines.push('');
@@ -486,7 +604,14 @@ dom.sendBtn.addEventListener('click', () => {
         return;
     }
 
-    const phone = WHATSAPP_PHONE; // Use the const defined at top
+    // Alertar se não calculou frete e tem endereço grande
+    if (state.shipping === 0 && dom.customerAddress.value.trim().length > 5) {
+        if (!confirm('O frete não foi calculado. Deseja enviar assim mesmo (frete a combinar)?')) {
+            return;
+        }
+    }
+
+    const phone = WHATSAPP_PHONE;
     const url = `https://wa.me/${phone}?text=${buildWhatsAppText()}`;
 
     window.open(url, '_blank');
@@ -495,6 +620,8 @@ dom.sendBtn.addEventListener('click', () => {
 dom.clearBtn.addEventListener('click', () => {
     if (confirm('Limpar o carrinho?')) {
         state.cart = [];
+        state.shipping = 0;
+        state.distance = 0;
         renderCart();
     }
 });
@@ -520,7 +647,6 @@ dom.searchInput.addEventListener('input', (e) => {
 });
 
 function showToast(msg) {
-    // Simple toast implementation could go here
     console.log('Toast:', msg);
 }
 
@@ -530,7 +656,6 @@ function init() {
     renderProducts();
     renderCart();
 
-    // Prevent form submission
     document.querySelectorAll('form').forEach(f => f.onsubmit = (e) => e.preventDefault());
 }
 

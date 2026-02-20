@@ -73,7 +73,13 @@
                     <input id="customerName" placeholder="Seu Nome (Obrigatório)" required />
                     <input id="customerPhone" placeholder="Seu Telefone / WhatsApp" inputmode="numeric" />
                 </div>
-                <input id="customerAddress" placeholder="Endereço de Entrega" />
+                <div class="form-row" style="grid-template-columns: 1fr auto; align-items:start">
+                    <input id="customerAddress" placeholder="Endereço de Entrega (Rua, Número, Bairro, Cidade)" />
+                    <button type="button" class="btn" id="calcShippingBtn"
+                        style="padding:10px; font-size:12px; height:42px; background:var(--bg-body); border:1px solid var(--border-light)">
+                        Calcular
+                    </button>
+                </div>
 
                 <select id="paymentMethod">
                     <option value="Pix">Pagamento via Pix</option>
@@ -86,9 +92,17 @@
             </div>
 
             <div class="totals">
-                <div class="row">
-                    <span>Total do Pedido</span>
-                    <strong id="total">R$ 0,00</strong>
+                <div class="row" style="color:var(--text-muted); font-size:13px; margin-bottom:4px">
+                    <span>Subtotal</span>
+                    <span id="subtotalVal">R$ 0,00</span>
+                </div>
+                <div class="row" style="color:var(--text-muted); font-size:13px; margin-bottom:4px">
+                    <span>Frete <small id="distanceVal"></small></span>
+                    <span id="shippingVal">--</span>
+                </div>
+                <div class="row" style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">
+                    <span style="font-weight:700">Total Final</span>
+                    <strong id="total" style="font-size:18px; color:var(--primary)">R$ 0,00</strong>
                 </div>
             </div>
 
