@@ -1,5 +1,5 @@
 const PRODUCTS = [
-    { id: 'qbsmash', name: 'Quero Smash', price: 11.90, category: 'Lanches', desc: 'Carne de primeira bem gostosa 100% bovina smash crocante, queijo derretendo encima da carne, deliciosa cebola caramelizada na manteiga, molho da casa no pão brioche macio. Simplesmente, impossível de resistir!', image: 'images/smash.jpg' },
+    { id: 'smashburguer', name: 'Quero Smash Burguer', price: 11.90, category: 'Lanches', desc: 'Carne de primeira bem gostosa 100% bovina smash crocante, queijo derretendo encima da carne, deliciosa cebola caramelizada na manteiga, molho da casa no pão brioche macio. Simplesmente, impossível de resistir!', image: 'images/QueroSmashBurguer.png' },
     { id: 'combofamilia2', name: 'Combo Família 2', price: 70.90, category: 'Combos', desc: '4 lanches + batata grande turbinada + refri 2l.', image: 'images/combof2.jpeg' },
     { id: 'combofamilia1', name: 'Combo Família 1', price: 59.90, category: 'Combos', desc: '2 lanches + 2 batatas + 2 bebidas.', image: 'images/combof1.jpeg' },
     { id: 'comboxtudo', name: 'Combo X-Tudo', price: 59.90, category: 'Combos', desc: 'X-Tudo + Batata Frita 140g + Bebida de sua escolha - O completo que você merece! Pão fresquinho, carne suculenta, ovo, queijo derretido, bacon crocante, presunto, alface e tomate fresquinho. Cada mordida é uma explosão de sabor!', image: 'images/combof1.jpeg' },
@@ -33,3 +33,4 @@ const ADDON_OPTIONS = [
     { id: 'ovo', name: 'Ovo', price: 2.50 },
     { id: 'cebola', name: 'Cebola caramelizada', price: 2.50 },
 ];
+
