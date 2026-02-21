@@ -1,5 +1,5 @@
 const PRODUCTS = [
-    { id: 'qbsmash', name: 'Quero Smash', price: 18.90, category: 'Artesanal', desc: 'Um delicioso Smash Burguer com a carne suculenta por dentro e aquela crostinha por fora, Cheddar e Cebola Caramelizada!', image: 'images/QueroSmashBurguer.jpg' },
+    { id: 'qbsmash', name: 'Quero Smash', price: 18.90, category: 'Quero Artesanal', desc: 'Um delicioso Smash Burguer com a carne suculenta por dentro e aquela crostinha por fora, Cheddar e Cebola Caramelizada!', image: 'images/QueroSmashBurguer.jpg' },
    
     { id: 'combofamilia4', name: 'Combo Família 4', price: 69.90, category: 'Combos', desc: '4 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof2.jpeg' },
     { id: 'combofamilia3', name: 'Combo Família 3', price: 59.90, category: 'Combos', desc: '3 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof1.jpeg' },
@@ -36,5 +36,6 @@ const SHIPPING = {
     pricePerKm: 1.50, // Adicional por km
     city: 'São Gonçalo' // Cidade padrão para busca
 };
+
 
 
