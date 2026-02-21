@@ -1,8 +1,8 @@
 const PRODUCTS = [
-    { id: 'qbsmash', name: 'Quero Smash', price: 11.90, category: 'Lanches', desc: 'Carne de primeira bem gostosa 100% bovina smash crocante, queijo derretendo encima da carne, deliciosa cebola caramelizada na manteiga, molho da casa no pão brioche macio. Simplesmente, impossível de resistir!', image: 'images/smash.jpg' },
-    { id: 'combofamilia2', name: 'Combo Família 2', price: 70.90, category: 'Combos', desc: '4 lanches + batata grande turbinada + refri 2l.', image: 'images/combof2.jpeg' },
-    { id: 'combofamilia1', name: 'Combo Família 1', price: 59.90, category: 'Combos', desc: '2 lanches + 2 batatas + 2 bebidas.', image: 'images/combof1.jpeg' },
-    { id: 'comboxtudo', name: 'Combo X-Tudo', price: 59.90, category: 'Combos', desc: 'X-Tudo + Batata Frita 140g + Bebida de sua escolha - O completo que você merece! Pão fresquinho, carne suculenta, ovo, queijo derretido, bacon crocante, presunto, alface e tomate fresquinho. Cada mordida é uma explosão de sabor!', image: 'images/combof1.jpeg' },
+    { id: 'qbsmash', name: 'Quero Smash', price: 18.90, category: 'Artesanal', desc: 'Um delicioso Smash Burguer com a carne suculenta por dentro e aquela crostinha por fora, Cheddar e Cebola Caramelizada!', image: 'images/QueroSmashBurguer.jpg' },
+    { id: 'combofamilia4', name: 'Combo Família 4', price: 69.90, category: 'Combos', desc: '4 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof2.jpeg' },
+    { id: 'combofamilia3', name: 'Combo Família 3', price: 59.90, category: 'Combos', desc: '3 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof1.jpeg' },
+    { id: 'comboxtudo', name: 'Combo X-Tudo', price: 18.90, category: 'Combos', desc: 'X-Tudo Delicioso + Batata Frita Crocrante 140g + Bebida Gelada', image: 'images/QueroComboXTudo.jpeg' },
     { id: 'batatam', name: 'Batata Frita Média', price: 18.90, category: 'Acompanhamentos', desc: 'Batata Crocante.', image: 'images/batatam.jpeg' },
     { id: 'batatag', name: 'Batata Frita Grande', price: 24.90, category: 'Acompanhamentos', desc: 'Batata Crocante.', image: 'images/batatag.jpeg' },
     { id: 'guaramor', name: 'Guaramor 250ml', price: 4.90, category: 'Bebidas', desc: 'Guaraná 250ml.', image: 'images/guaramor.jpg' },
@@ -45,3 +45,4 @@ const SHIPPING = {
     pricePerKm: 1.50, // Adicional por km
     city: 'São Gonçalo' // Cidade padrão para busca
 };
+
