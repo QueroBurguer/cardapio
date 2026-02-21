@@ -127,7 +127,7 @@ function productCard(p) {
 
     function doAdd() {
         const q = parseInt(input.value) || 1;
-        if ((p.category || '').toLowerCase().includes('Quero Combos') || (p.category || '').toLowerCase().includes('Quero Artesanal')) || (p.category || '').toLowerCase().includes('Quero Bebidas') { 
+        if ((p.category || '').toLowerCase().includes('Quero Combos Hamburgueres') || (p.category || '').toLowerCase().includes('Quero Combos Artesanais') || (p.category || '').toLowerCase().includes('Quero Artesanal')) || (p.category || '').toLowerCase().includes('Quero Bebidas') || (p.category || '').toLowerCase().includes('Quero Batatas') { 
             openCustomizer(p, q);
         } else {
             addToCart(p, q);
@@ -660,4 +660,5 @@ function init() {
 }
 
 init();
+
 
