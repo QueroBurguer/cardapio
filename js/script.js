@@ -126,16 +126,24 @@ function productCard(p) {
     input.addEventListener('keydown', (e) => e.stopPropagation());
 
     function doAdd() {
-        const q = parseInt(input.value) || 1;
-        if ((p.category || '').toLowerCase().includes('Quero Combos Hamburgueres') || (p.category || '').toLowerCase().includes('Quero Combos Artesanais') || (p.category || '').toLowerCase().includes('Quero Artesanal')) || (p.category || '').toLowerCase().includes('Quero Bebidas') || (p.category || '').toLowerCase().includes('Quero Batatas') { 
-            openCustomizer(p, q);
-        } else {
-            addToCart(p, q);
-            showToast(`${q}x ${p.name} adicionado!`);
-            if (isMobile()) setCartOpen(true);
-        }
-    }
+    const q = parseInt(input.value) || 1;
 
+    const category = (p.category || '').toLowerCase();
+
+    if (
+        category.includes('quero combos hamburgueres') ||
+        category.includes('quero combos artesanais') ||
+        category.includes('quero artesanal') ||
+        category.includes('quero bebidas') ||
+        category.includes('quero batatas')
+    ) {
+        openCustomizer(p, q);
+    } else {
+        addToCart(p, q);
+        showToast(`${q}x ${p.name} adicionado!`);
+        if (isMobile()) setCartOpen(true);
+    }
+}
     card.addEventListener('click', doAdd);
 
     // Acessibilidade: Enter ou Espaço
@@ -660,5 +668,6 @@ function init() {
 }
 
 init();
+
 
 
