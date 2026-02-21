@@ -126,17 +126,22 @@ function productCard(p) {
     input.addEventListener('keydown', (e) => e.stopPropagation());
 
     function doAdd() {
-    const q = parseInt(input.value) || 1;
+    const q = parseInt(input.value, 10) || 1;
 
-    const category = (p.category || '').toLowerCase();
+    const category = String(p.category || '').toLowerCase();
 
-    if (
-        category.includes('quero combos hamburgueres') ||
-        category.includes('quero combos artesanais') ||
-        category.includes('quero artesanal') ||
-        category.includes('quero bebidas') ||
-        category.includes('quero batatas')
-    ) {
+    // Categorias/termos que ABREM o modal de adicionais
+    const customTriggers = [
+        'quero combos hamburgueres',
+        'quero combos artesanais',
+        'quero artesanal',
+        'quero bebidas',
+        'quero batatas'
+    ];
+
+    const needsCustomizer = customTriggers.some(t => category.includes(t));
+
+    if (needsCustomizer) {
         openCustomizer(p, q);
     } else {
         addToCart(p, q);
@@ -668,6 +673,7 @@ function init() {
 }
 
 init();
+
 
 
 
