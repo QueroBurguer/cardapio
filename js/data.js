@@ -1,14 +1,15 @@
 const PRODUCTS = [
     { id: 'qbsmash', name: 'Quero Smash', price: 18.90, category: 'Quero Artesanal', desc: 'Um delicioso Smash Burguer com a carne suculenta por dentro e aquela crostinha por fora, Cheddar e Cebola Caramelizada!', image: 'images/QueroSmashBurguer.jpg' },
-   
-    { id: 'combofamilia4', name: 'Combo Família 4', price: 69.90, category: 'Combos', desc: '4 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof2.jpeg' },
-    { id: 'combofamilia3', name: 'Combo Família 3', price: 59.90, category: 'Combos', desc: '3 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof1.jpeg' },
-    { id: 'comboxtudo', name: 'Combo X-Tudo', price: 18.90, category: 'Combos', desc: 'X-Tudo Delicioso + Batata Frita Crocrante 140g + Bebida Gelada', image: 'images/QueroComboXTudo.jpeg' },
 
+    { id: 'comboxtudo', name: 'Combo X-Tudo', price: 18.90, category: 'Quero Combos', desc: 'X-Tudo Delicioso + Batata Frita Crocrante 140g + Bebida Gelada', image: 'images/QueroComboXTudo.jpeg' },
+    { id: 'combofamilia3', name: 'Combo Família 3', price: 59.90, category: 'Quero Combos', desc: '3 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof1.jpeg' },
+    { id: 'combofamilia4', name: 'Combo Família 4', price: 69.90, category: 'Quero Combos', desc: '4 Deliciosos X-Tudos + Batata Turbinada 600g + Bebida Gelada 2L.', image: 'images/combof2.jpeg' },
+    
+    
     { id: 'batatafritaP', name: 'Batata Frita Crocrante 140g', price: 7.90, category: 'Batatas Fritas', desc: 'Batata Frita na hora, Crocrante por fora e Macia por dentro 140g.', image: 'images/QueroBatataFrita.jpeg' },
     { id: 'batatag', name: 'Batata Frita Grande', price: 24.90, category: 'Acompanhamentos', desc: 'Batata Crocante.', image: 'images/batatag.jpeg' },
    
-   ];
+];
 
 const DRINK_OPTIONS = [
     { id: 'coca_lata', name: 'Coca-Cola Lata 350ml', price: 6.00 },
@@ -36,6 +37,7 @@ const SHIPPING = {
     pricePerKm: 1.50, // Adicional por km
     city: 'São Gonçalo' // Cidade padrão para busca
 };
+
 
 
 
