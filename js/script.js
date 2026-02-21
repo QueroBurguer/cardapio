@@ -127,7 +127,7 @@ function productCard(p) {
 
     function doAdd() {
         const q = parseInt(input.value) || 1;
-        if ((p.category || '').toLowerCase().includes('lanches') || (p.category || '').toLowerCase().includes('combos')) {
+        if ((p.category || '').toLowerCase().includes('Quero Combos') || (p.category || '').toLowerCase().includes('Quero Artesanal')) || (p.category || '').toLowerCase().includes('Quero Bebidas') { 
             openCustomizer(p, q);
         } else {
             addToCart(p, q);
@@ -660,3 +660,4 @@ function init() {
 }
 
 init();
+
