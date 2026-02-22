@@ -3,8 +3,9 @@ const WHATSAPP_PHONE = '5521992497289';
 
 // ========= ESTADO =========
 const priority = [
-    'Quero Combo Artesanal',
-    'Quero Combo Hamburguer'
+    'quero combo',
+    'quero combo artesanal'
+
 ];
 
 let categoriesToShow = (state.category === 'Todos')
@@ -283,5 +284,6 @@ function init() {
 }
 
 init();
+
 
 
