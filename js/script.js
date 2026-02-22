@@ -1,3 +1,18 @@
+// ========= DEBUG VISUAL (se der erro, aparece na tela) =========
+window.addEventListener('error', (e) => {
+  try {
+    const box = document.createElement('div');
+    box.style.cssText = `
+      position:fixed; left:12px; right:12px; bottom:12px; z-index:99999;
+      background:#2b0f12; border:1px solid #ff4d4f; color:#fff;
+      padding:12px; border-radius:12px; font:12px/1.4 system-ui;
+      white-space:pre-wrap;
+    `;
+    box.textContent = `ERRO NO JS:\n${e.message}\n${e.filename}:${e.lineno}:${e.colno}`;
+    document.body.appendChild(box);
+  } catch (_) {}
+});
+
 // ========= CONFIG =========
 const WHATSAPP_PHONE = '5521992497289';
 
@@ -12,27 +27,35 @@ const state = {
 };
 
 // ========= UTILITÁRIOS =========
-const formatBRL = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+const formatBRL = (n) => Number(n || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 const unique = (arr) => [...new Set(arr)];
 const normalizeDigits = (s) => String(s || '').replace(/\D+/g, '');
 const isMobile = () => window.matchMedia('(max-width: 960px)').matches;
 
-// ========= ORDEM DE CATEGORIAS (PRIORIDADE) =========
-const PRIORITY_FIRST = [
-  'Quero Combo',
-  'Quero Artesanal'
-];
-
-const PRIORITY_LAST = [
-  'Bebidas'
-];
+// ========= ORDEM DE CATEGORIAS =========
+const PRIORITY_FIRST = ['Quero Combo', 'Quero Artesanal'];
+const PRIORITY_LAST = ['Bebidas'];
 
 function sortCategoriesWithPriority(categories) {
-  const set = [...new Set(categories)];
-  const priority = PRIORITY_CATEGORIES.filter(c => set.includes(c));
-  const rest = set.filter(c => !PRIORITY_CATEGORIES.includes(c));
-  return [...priority, ...rest];
+  const uniqueList = [...new Set(categories)];
+
+  const first = PRIORITY_FIRST.filter(c => uniqueList.includes(c));
+  const last = PRIORITY_LAST.filter(c => uniqueList.includes(c));
+
+  const middle = uniqueList.filter(
+    c => !PRIORITY_FIRST.includes(c) && !PRIORITY_LAST.includes(c)
+  );
+
+  return [...first, ...middle, ...last];
 }
+
+// ========= CATEGORIAS QUE ABREM ADICIONAIS =========
+// (você pode ajustar aqui se quiser que batata também abra modal)
+const CUSTOM_CATEGORIES = [
+  'quero combo',
+  'quero artesanal',
+  'bebidas'
+];
 
 // ========= ELEMENTOS DOM =========
 const dom = {
@@ -49,13 +72,11 @@ const dom = {
   productGrid: document.getElementById('productGrid'),
   categoryChips: document.getElementById('categoryChips'),
 
-  // Shipping
   subtotalVal: document.getElementById('subtotalVal'),
   shippingVal: document.getElementById('shippingVal'),
   distanceVal: document.getElementById('distanceVal'),
   calcShippingBtn: document.getElementById('calcShippingBtn'),
 
-  // Modal
   customModal: document.getElementById('customModal'),
   customTitle: document.getElementById('customTitle'),
   customSub: document.getElementById('customSub'),
@@ -69,7 +90,6 @@ const dom = {
   modalProductName: document.getElementById('modalProductName'),
   modalProductDesc: document.getElementById('modalProductDesc'),
 
-  // Checkout Fields
   customerName: document.getElementById('customerName'),
   customerPhone: document.getElementById('customerPhone'),
   customerAddress: document.getElementById('customerAddress'),
@@ -80,16 +100,11 @@ const dom = {
 // ========= CUSTOM UI STATE =========
 const customUI = { open: false, product: null, qty: 1, drinkId: null, addonIds: new Set() };
 
-// ========= CATEGORIAS QUE ABREM ADICIONAIS =========
-// (Com seus dados atuais: Quero Combo e Quero Artesanal)
-const CUSTOM_CATEGORIES = [
-  'quero combo',
-  'quero artesanal'
-];
-
-// ========= FUNÇÕES DE RENDERIZAÇÃO =========
+// ========= CATEGORIAS =========
 function renderCategories() {
-  const catsSorted = sortCategoriesWithPriority(PRODUCTS.map(p => p.category));
+  if (!dom.categoryChips) return;
+
+  const catsSorted = sortCategoriesWithPriority((PRODUCTS || []).map(p => p.category));
   const cats = ['Todos', ...catsSorted];
 
   dom.categoryChips.innerHTML = '';
@@ -110,15 +125,16 @@ function renderCategories() {
   });
 }
 
+// ========= CARD DE PRODUTO =========
 function productCard(p) {
   const card = document.createElement('article');
   card.className = 'card';
   card.tabIndex = 0;
 
   card.innerHTML = `
-    <img class="thumb" src="${p.image}" alt="${p.name}" loading="lazy">
+    <img class="thumb" src="${p.image || ''}" alt="${p.name || ''}" loading="lazy">
     <div class="pad">
-      <h4 class="title">${p.name}</h4>
+      <h4 class="title">${p.name || ''}</h4>
       <p class="desc">${p.desc || ''}</p>
       <div class="priceRow">
         <span class="price">${formatBRL(p.price)}</span>
@@ -167,6 +183,7 @@ function productCard(p) {
   }
 
   card.addEventListener('click', doAdd);
+
   card.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -177,8 +194,17 @@ function productCard(p) {
   return card;
 }
 
+// ========= PRODUTOS =========
 function renderProducts() {
+  if (!dom.productGrid) return;
+
   dom.productGrid.innerHTML = '';
+
+  if (!Array.isArray(PRODUCTS) || PRODUCTS.length === 0) {
+    dom.productGrid.innerHTML = `<div style="padding:30px;color:#aaa">Sem produtos (PRODUCTS vazio).</div>`;
+    return;
+  }
+
   const q = (state.q || '').trim().toLowerCase();
 
   const filtered = PRODUCTS.filter(p => {
@@ -188,7 +214,7 @@ function renderProducts() {
   });
 
   let categoriesToShow = (state.category === 'Todos')
-    ? unique(PRODUCTS.map(p => p.category))
+    ? unique(filtered.map(p => p.category)) // usa filtered aqui (evita “sumir” por categorias vazias)
     : [state.category];
 
   if (state.category === 'Todos') {
@@ -225,7 +251,9 @@ function renderProducts() {
 
 // ========= CARRINHO =========
 function addToCart(product, qty = 1, meta = null, uniqueId = null) {
-  // Se tem meta (personalização), cria item único
+  if (!product || !product.id) return;
+
+  // Item com personalização (não agrupa)
   if (meta) {
     state.cart.push({
       id: uniqueId || `${product.id}_${Date.now()}`,
@@ -236,20 +264,12 @@ function addToCart(product, qty = 1, meta = null, uniqueId = null) {
       meta
     });
   } else {
-    // Produto simples, agrupa
+    // Item simples (agrupa)
     const existing = state.cart.find(i => i.baseId === product.id && !i.meta);
-    if (existing) {
-      existing.qty += qty;
-    } else {
-      state.cart.push({
-        id: product.id,
-        baseId: product.id,
-        name: product.name,
-        price: product.price,
-        qty
-      });
-    }
+    if (existing) existing.qty += qty;
+    else state.cart.push({ id: product.id, baseId: product.id, name: product.name, price: product.price, qty });
   }
+
   renderCart();
 }
 
@@ -261,14 +281,14 @@ function removeFromCart(id) {
 function updateQty(id, delta) {
   const it = state.cart.find(i => i.id === id);
   if (!it) return;
-
   const newQty = it.qty + delta;
   if (newQty > 0) it.qty = newQty;
-
   renderCart();
 }
 
 function renderCart() {
+  if (!dom.cartItems) return;
+
   dom.cartItems.innerHTML = '';
 
   state.cart.forEach(it => {
@@ -310,44 +330,48 @@ function renderCart() {
   }
 
   const hasItems = state.cart.length > 0;
-  dom.sendBtn.disabled = !hasItems;
-  dom.clearBtn.disabled = !hasItems;
+  if (dom.sendBtn) dom.sendBtn.disabled = !hasItems;
+  if (dom.clearBtn) dom.clearBtn.disabled = !hasItems;
 
-  // Badge / FAB
   const totalQty = state.cart.reduce((s, i) => s + i.qty, 0);
-  if (totalQty > 0) {
-    dom.cartBadge.style.display = 'grid';
-    dom.cartBadge.textContent = totalQty;
-    dom.fabCart.classList.add('filled');
-  } else {
-    dom.cartBadge.style.display = 'none';
-    dom.fabCart.classList.remove('filled');
+  if (dom.cartBadge) {
+    if (totalQty > 0) {
+      dom.cartBadge.style.display = 'grid';
+      dom.cartBadge.textContent = totalQty;
+      if (dom.fabCart) dom.fabCart.classList.add('filled');
+    } else {
+      dom.cartBadge.style.display = 'none';
+      if (dom.fabCart) dom.fabCart.classList.remove('filled');
+    }
   }
 }
 
 // ========= CÁLCULO DE FRETE (NOMINATIM / HAVERSINE) =========
+function deg2rad(deg) {
+  return deg * (Math.PI / 180);
+}
+
 function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = deg2rad(lat2 - lat1);
   const dLon = deg2rad(lon2 - lon1);
   const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLat / 2) ** 2 +
     Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    Math.sin(dLon / 2) ** 2;
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 
-function deg2rad(deg) {
-  return deg * (Math.PI / 180);
-}
-
 async function fetchCoordinates(address) {
   try {
+    if (!SHIPPING || !SHIPPING.city) return null;
+
     const query = `${address}, ${SHIPPING.city}, Brasil`;
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=1`;
     const res = await fetch(url, { headers: { 'User-Agent': 'QueroBurguerApp/1.0' } });
     const data = await res.json();
+
     if (data && data.length > 0) {
       return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) };
     }
@@ -360,7 +384,12 @@ async function fetchCoordinates(address) {
 
 if (dom.calcShippingBtn) {
   dom.calcShippingBtn.addEventListener('click', async () => {
-    const address = dom.customerAddress.value.trim();
+    if (!SHIPPING || SHIPPING.active === false) {
+      alert('Frete desativado.');
+      return;
+    }
+
+    const address = (dom.customerAddress?.value || '').trim();
     if (!address || address.length < 5) {
       alert('Digite o endereço completo (Rua, Número, Bairro) para calcular.');
       return;
@@ -412,20 +441,20 @@ function setCustomOpen(open) {
   customUI.open = open;
 
   if (open) {
-    dom.overlay.classList.add('show');
-    dom.customModal.classList.add('open');
-    dom.customModal.setAttribute('aria-hidden', 'false');
+    dom.overlay?.classList.add('show');
+    dom.customModal?.classList.add('open');
+    dom.customModal?.setAttribute('aria-hidden', 'false');
   } else {
-    dom.overlay.classList.remove('show');
-    dom.customModal.classList.remove('open');
-    dom.customModal.setAttribute('aria-hidden', 'true');
+    dom.overlay?.classList.remove('show');
+    dom.customModal?.classList.remove('open');
+    dom.customModal?.setAttribute('aria-hidden', 'true');
 
     setTimeout(() => {
       if (!customUI.open) {
         customUI.product = null;
-        dom.itemNote.value = '';
-        dom.drinkBox.innerHTML = '';
-        dom.addonBox.innerHTML = '';
+        if (dom.itemNote) dom.itemNote.value = '';
+        if (dom.drinkBox) dom.drinkBox.innerHTML = '';
+        if (dom.addonBox) dom.addonBox.innerHTML = '';
       }
     }, 200);
   }
@@ -437,22 +466,24 @@ function openCustomizer(product, qty) {
   customUI.drinkId = null;
   customUI.addonIds = new Set();
 
-  dom.customTitle.textContent = product.name;
-  dom.customSub.textContent = `Base: ${formatBRL(product.price)}`;
+  if (dom.customTitle) dom.customTitle.textContent = product.name;
+  if (dom.customSub) dom.customSub.textContent = `Base: ${formatBRL(product.price)}`;
 
-  dom.modalProductImg.src = product.image || '';
-  dom.modalProductName.textContent = product.name;
-  dom.modalProductDesc.textContent = product.desc || '';
+  if (dom.modalProductImg) dom.modalProductImg.src = product.image || '';
+  if (dom.modalProductName) dom.modalProductName.textContent = product.name || '';
+  if (dom.modalProductDesc) dom.modalProductDesc.textContent = product.desc || '';
 
-  renderOptionCards(dom.drinkBox, DRINK_OPTIONS, 'drink');
-  renderOptionCards(dom.addonBox, ADDON_OPTIONS, 'addon');
+  renderOptionCards(dom.drinkBox, DRINK_OPTIONS || [], 'drink');
+  renderOptionCards(dom.addonBox, ADDON_OPTIONS || [], 'addon');
   updateCustomPrice();
 
   setCustomOpen(true);
 }
 
 function renderOptionCards(container, options, type) {
+  if (!container) return;
   container.innerHTML = '';
+
   options.forEach(opt => {
     const card = document.createElement('div');
     card.className = 'optionCard';
@@ -493,84 +524,85 @@ function renderOptionCards(container, options, type) {
 
 function updateCustomPrice() {
   if (!customUI.product) return;
-  const base = customUI.product.price;
+  const base = Number(customUI.product.price || 0);
 
   let extras = 0;
-  const drink = DRINK_OPTIONS.find(d => d.id === customUI.drinkId);
-  if (drink) extras += drink.price;
+
+  const drink = (DRINK_OPTIONS || []).find(d => d.id === customUI.drinkId);
+  if (drink) extras += Number(drink.price || 0);
 
   customUI.addonIds.forEach(id => {
-    const add = ADDON_OPTIONS.find(a => a.id === id);
-    if (add) extras += add.price;
+    const add = (ADDON_OPTIONS || []).find(a => a.id === id);
+    if (add) extras += Number(add.price || 0);
   });
 
   const totalOne = base + extras;
   const totalAll = totalOne * customUI.qty;
 
-  dom.customItemPrice.textContent = `${formatBRL(totalAll)} (x${customUI.qty})`;
+  if (dom.customItemPrice) dom.customItemPrice.textContent = `${formatBRL(totalAll)} (x${customUI.qty})`;
 }
 
-dom.customConfirmBtn.onclick = () => {
-  if (!customUI.product) return;
+if (dom.customConfirmBtn) {
+  dom.customConfirmBtn.onclick = () => {
+    if (!customUI.product) return;
 
-  const base = customUI.product.price;
-  const drink = DRINK_OPTIONS.find(d => d.id === customUI.drinkId);
+    const base = Number(customUI.product.price || 0);
+    const drink = (DRINK_OPTIONS || []).find(d => d.id === customUI.drinkId);
 
-  const addons = [];
-  customUI.addonIds.forEach(id => {
-    const a = ADDON_OPTIONS.find(x => x.id === id);
-    if (a) addons.push(a);
-  });
+    const addons = [];
+    customUI.addonIds.forEach(id => {
+      const a = (ADDON_OPTIONS || []).find(x => x.id === id);
+      if (a) addons.push(a);
+    });
 
-  let extrasTotal = 0;
-  if (drink) extrasTotal += drink.price;
-  addons.forEach(a => extrasTotal += a.price);
+    let extrasTotal = 0;
+    if (drink) extrasTotal += Number(drink.price || 0);
+    addons.forEach(a => extrasTotal += Number(a.price || 0));
 
-  const finalUnitPrice = base + extrasTotal;
+    const finalUnitPrice = base + extrasTotal;
 
-  const parts = [];
-  if (drink) parts.push(`Bebida: ${drink.name}`);
-  if (addons.length) parts.push(`Add: ${addons.map(a => a.name).join(', ')}`);
+    const parts = [];
+    if (drink) parts.push(`Bebida: ${drink.name}`);
+    if (addons.length) parts.push(`Add: ${addons.map(a => a.name).join(', ')}`);
 
-  const obs = dom.itemNote.value.trim();
-  if (obs) parts.push(`Obs: ${obs}`);
+    const obs = (dom.itemNote?.value || '').trim();
+    if (obs) parts.push(`Obs: ${obs}`);
 
-  const displayName = parts.length
-    ? `${customUI.product.name} (${parts.join(' • ')})`
-    : customUI.product.name;
+    const displayName = parts.length
+      ? `${customUI.product.name} (${parts.join(' • ')})`
+      : customUI.product.name;
 
-  const meta = {
-    baseId: customUI.product.id,
-    drink: drink ? { id: drink.id, name: drink.name, price: drink.price } : null,
-    addons: addons.map(a => ({ id: a.id, name: a.name, price: a.price })),
-    obs: obs
+    const meta = {
+      baseId: customUI.product.id,
+      drink: drink ? { id: drink.id, name: drink.name, price: drink.price } : null,
+      addons: addons.map(a => ({ id: a.id, name: a.name, price: a.price })),
+      obs: obs
+    };
+
+    addToCart({ id: customUI.product.id, name: displayName, price: finalUnitPrice }, customUI.qty, meta);
+
+    setCustomOpen(false);
+    if (isMobile()) setCartOpen(true);
   };
+}
 
-  addToCart({
-    id: customUI.product.id,
-    name: displayName,
-    price: finalUnitPrice
-  }, customUI.qty, meta);
+if (dom.customCloseBtn) dom.customCloseBtn.onclick = () => setCustomOpen(false);
 
-  setCustomOpen(false);
-  if (isMobile()) setCartOpen(true);
-};
-
-dom.customCloseBtn.onclick = () => setCustomOpen(false);
-
-dom.overlay.addEventListener('click', () => {
-  if (customUI.open) setCustomOpen(false);
-  if (isMobile() && dom.cartBox.classList.contains('open')) setCartOpen(false);
-});
+if (dom.overlay) {
+  dom.overlay.addEventListener('click', () => {
+    if (customUI.open) setCustomOpen(false);
+    if (isMobile() && dom.cartBox?.classList.contains('open')) setCartOpen(false);
+  });
+}
 
 // ========= WHATSAPP & CHECKOUT =========
 function getCustomerFields() {
   return {
-    name: dom.customerName.value.trim() || 'Não informado',
-    phone: normalizeDigits(dom.customerPhone.value) || 'Não informado',
-    address: dom.customerAddress.value.trim() || 'Não informado',
-    pay: dom.paymentMethod.value,
-    obs: dom.noteText.value.trim() || 'Sem observação'
+    name: (dom.customerName?.value || '').trim() || 'Não informado',
+    phone: normalizeDigits(dom.customerPhone?.value) || 'Não informado',
+    address: (dom.customerAddress?.value || '').trim() || 'Não informado',
+    pay: dom.paymentMethod?.value || 'Não informado',
+    obs: (dom.noteText?.value || '').trim() || 'Sem observação'
   };
 }
 
@@ -609,50 +641,58 @@ function buildWhatsAppText() {
   return encodeURIComponent(lines.join('\n'));
 }
 
-dom.sendBtn.addEventListener('click', () => {
-  if (state.cart.length === 0) return;
+if (dom.sendBtn) {
+  dom.sendBtn.addEventListener('click', () => {
+    if (state.cart.length === 0) return;
 
-  if (!dom.customerName.value.trim()) {
-    alert('Por favor, digite seu nome.');
-    dom.customerName.focus();
-    return;
-  }
+    if (!(dom.customerName?.value || '').trim()) {
+      alert('Por favor, digite seu nome.');
+      dom.customerName?.focus();
+      return;
+    }
 
-  if (state.shipping === 0 && dom.customerAddress.value.trim().length > 5) {
-    if (!confirm('O frete não foi calculado. Deseja enviar assim mesmo (frete a combinar)?')) return;
-  }
+    if (state.shipping === 0 && (dom.customerAddress?.value || '').trim().length > 5) {
+      if (!confirm('O frete não foi calculado. Deseja enviar assim mesmo (frete a combinar)?')) return;
+    }
 
-  const url = `https://wa.me/${WHATSAPP_PHONE}?text=${buildWhatsAppText()}`;
-  window.open(url, '_blank');
-});
+    const url = `https://wa.me/${WHATSAPP_PHONE}?text=${buildWhatsAppText()}`;
+    window.open(url, '_blank');
+  });
+}
 
-dom.clearBtn.addEventListener('click', () => {
-  if (confirm('Limpar o carrinho?')) {
-    state.cart = [];
-    state.shipping = 0;
-    state.distance = 0;
-    renderCart();
-  }
-});
+if (dom.clearBtn) {
+  dom.clearBtn.addEventListener('click', () => {
+    if (confirm('Limpar o carrinho?')) {
+      state.cart = [];
+      state.shipping = 0;
+      state.distance = 0;
+      renderCart();
+    }
+  });
+}
 
 // ========= UI EVENTS =========
 function setCartOpen(open) {
+  if (!dom.cartBox) return;
+
   if (open) {
     dom.cartBox.classList.add('open');
-    if (isMobile()) dom.overlay.classList.add('show');
+    if (isMobile()) dom.overlay?.classList.add('show');
   } else {
     dom.cartBox.classList.remove('open');
-    dom.overlay.classList.remove('show');
+    dom.overlay?.classList.remove('show');
   }
 }
 
-dom.fabCart.onclick = () => setCartOpen(true);
-dom.toggleCartBtn.onclick = () => setCartOpen(false);
+if (dom.fabCart) dom.fabCart.onclick = () => setCartOpen(true);
+if (dom.toggleCartBtn) dom.toggleCartBtn.onclick = () => setCartOpen(false);
 
-dom.searchInput.addEventListener('input', (e) => {
-  state.q = e.target.value;
-  renderProducts();
-});
+if (dom.searchInput) {
+  dom.searchInput.addEventListener('input', (e) => {
+    state.q = e.target.value;
+    renderProducts();
+  });
+}
 
 function showToast(msg) {
   console.log('Toast:', msg);
@@ -663,9 +703,6 @@ function init() {
   renderCategories();
   renderProducts();
   renderCart();
-
-  document.querySelectorAll('form').forEach(f => f.onsubmit = (e) => e.preventDefault());
 }
 
 init();
-
