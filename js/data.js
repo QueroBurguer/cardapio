@@ -8,8 +8,8 @@ const PRODUCTS = [
     { id: 'qbsmash', name: 'Quero Smash', price: 18.90, category: 'Quero Artesanal', desc: 'Um delicioso Smash Burguer com a carne suculenta por dentro e aquela crostinha por fora, Cheddar e Cebola Caramelizada!', image: 'images/QueroSmashBurguer.jpg' },
 
     
-    { id: 'batatafritaP', name: 'Batata Frita Crocrante 140g', price: 7.90, category: 'Batatas Fritas', desc: 'Batata Frita na hora, Crocrante por fora e Macia por dentro 140g.', image: 'images/QueroBatataFrita.jpeg' },
-    { id: 'batatag', name: 'Batata Frita Grande', price: 24.90, category: 'Acompanhamentos', desc: 'Batata Crocante.', image: 'images/batatag.jpeg' },
+    { id: 'batatafritaP', name: 'Batata Frita Crocrante 140g', price: 7.90, category: 'Batata Frita', desc: 'Batata Frita na hora, Crocrante por fora e Macia por dentro 140g.', image: 'images/QueroBatataFrita.jpeg' },
+    { id: 'batatag', name: 'Batata Frita Grande', price: 24.90, category: 'Batata Frita', desc: 'Batata Crocante.', image: 'images/batatag.jpeg' },
    
 ];
 
@@ -39,6 +39,7 @@ const SHIPPING = {
     pricePerKm: 1.50, // Adicional por km
     city: 'São Gonçalo' // Cidade padrão para busca
 };
+
 
 
 
