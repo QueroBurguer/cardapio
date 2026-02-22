@@ -2,21 +2,14 @@
 const WHATSAPP_PHONE = '5521992497289';
 
 // ========= ESTADO =========
-const priority = [
-    'quero combo',
-    'quero combo artesanal'
-
-];
-
-let categoriesToShow = (state.category === 'Todos')
-    ? unique(PRODUCTS.map(p => p.category))
-    : [state.category];
-
-// Ordena colocando prioritárias primeiro
-categoriesToShow = [
-    ...priority.filter(c => categoriesToShow.includes(c)),
-    ...categoriesToShow.filter(c => !priority.includes(c))
-];
+const state = {
+    category: 'Todos',
+    cart: [],
+    q: '',
+    shipping: 0,
+    distance: 0,
+    addressCoords: null
+};
 
 // ========= UTILITÁRIOS =========
 const formatBRL = (n) => n.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -69,12 +62,11 @@ const customUI = { open: false, product: null, qty: 1, drinkId: null, addonIds: 
 
 // ========= CATEGORIAS QUE ABREM ADICIONAIS =========
 const CUSTOM_CATEGORIES = [
-    'quero combo',
-    'quero combo artesanal',
-    'quero hamburguer',
-    'quero hamburguer artesanal',
-    'quero bebida',
-    'quero batata'
+    'quero combos hamburgueres',
+    'quero combos artesanais',
+    'quero artesanal',
+    'quero bebidas',
+    'quero batatas'
 ];
 
 // ========= CATEGORIAS =========
@@ -284,6 +276,3 @@ function init() {
 }
 
 init();
-
-
-
