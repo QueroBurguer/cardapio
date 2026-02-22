@@ -62,7 +62,7 @@ const customUI = { open: false, product: null, qty: 1, drinkId: null, addonIds: 
 
 // ========= CATEGORIAS QUE ABREM ADICIONAIS =========
 const CUSTOM_CATEGORIES = [
-    'quero combos hamburgueres',
+    'quero combo',
     'quero combos artesanais',
     'quero artesanal',
     'quero bebidas',
@@ -276,3 +276,4 @@ function init() {
 }
 
 init();
+
