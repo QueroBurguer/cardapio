@@ -72,3 +72,4 @@ const SHIPPING = {
     pricePerKm: 1.50,
     city: 'São Gonçalo'
 };
+
