@@ -20,9 +20,10 @@ const PRODUCTS = [
     { id: 'combofamilia1', name: 'Combo Família 1', price: 59.90, category: 'Combos', desc: '2 lanches + 2 batatas + 2 bebidas.', image: 'images/QueroComboXSalada.jpg' },
     { id: 'comboxtudo', name: 'Combo X-Tudo', price: 59.90, category: 'Combos', desc: 'X-Tudo + Batata Frita 140g + Bebida de sua escolha - O completo que você merece!', image: 'images/QueroComboXTudo.jpg' },
     { id: 'combocasal', name: 'Combo Casal', price: 45.90, category: 'Combos', desc: '2 Lanches + Batata Média + Bebida (Escolha abaixo)', image: 'images/QueroComboXSalada.jpg' },
+    { id: 'comboxsalada', name: 'Combo X-Salada', price: 39.90, category: 'Combos', desc: 'X-Salada + Batata Frita + Bebida de sua escolha - Sabor e frescor no combo perfeito!', image: 'images/QueroComboXSalada.jpg' },
     { id: 'combokids', name: 'Combo Kids', price: 29.90, category: 'Combos', desc: 'Lanche Kids + Batata Frita + Bebida - Feito para a criançada!', image: 'images/QueroComboKids.jpg' },
-    { id: 'combofamilia3', name: 'Combo Família 3', price: 85.90, category: 'Combos', desc: '3 Lanches + Batata Grande + Bebida (Escolha abaixo)', image: 'images/QueroComboBurguerDuplo.jpg' },
-    { id: 'combofamilia4', name: 'Combo Família 4', price: 110.90, category: 'Combos', desc: '4 Lanches + Batata Gigante + Bebida (Escolha abaixo)', image: 'images/QueroComboBurguerDuplo.jpg' },
+    { id: 'combofamilia3', name: 'Combo Família 3', price: 85.90, category: 'Combos', desc: '3 Lanches + Batata Grande + Bebida (Escolha abaixo)', image: 'images/combof1.jpeg' },
+    { id: 'combofamilia4', name: 'Combo Família 4', price: 110.90, category: 'Combos', desc: '4 Lanches + Batata Gigante + Bebida (Escolha abaixo)', image: 'images/combof2.jpeg' },
 
     // ========= ACOMPANHAMENTOS =========
     { id: 'batatam', name: 'Batata Frita 300g', price: 18.90, category: 'Acompanhamentos', desc: 'Batata frita crocante, porção de 300g.', image: 'images/Batata300g.jpeg' },
@@ -72,4 +73,3 @@ const SHIPPING = {
     pricePerKm: 1.50,
     city: 'São Gonçalo'
 };
-
