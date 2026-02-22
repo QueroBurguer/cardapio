@@ -1,7 +1,7 @@
 const PRODUCTS = [
     { id: 'qbsmash', name: 'Quero Smash', price: 11.90, category: 'Lanches', desc: 'Carne de primeira bem gostosa 100% bovina smash crocante, queijo derretendo encima da carne, deliciosa cebola caramelizada na manteiga, molho da casa no pão brioche macio. Simplesmente, impossível de resistir!', image: 'images/QueroSmashBurguer.jpg' },
-    { id: 'combofamilia4', name: 'Combo Família 4', price: 70.90, category: 'Combos', desc: '4 lanches + batata grande turbinada + refri 2l.', image: 'images/Combof2.jpg' },
-    { id: 'combofamilia3', name: 'Combo Família 3', price: 59.90, category: 'Combos', desc: '2 lanches + 2 batatas + 2 bebidas.', image: 'images/Combof1.jpg' },
+    { id: 'combofamilia4', name: 'Combo Família 4', price: 70.90, category: 'Combos', desc: '4 lanches + batata grande turbinada + refri 2l.', image: 'images/Combof2.jpeg' },
+    { id: 'combofamilia3', name: 'Combo Família 3', price: 59.90, category: 'Combos', desc: '2 lanches + 2 batatas + 2 bebidas.', image: 'images/Combof1.jpeg' },
     { id: 'comboxtudo', name: 'Combo X-Tudo', price: 59.90, category: 'Combos', desc: 'X-Tudo + Batata Frita 140g + Bebida de sua escolha - O completo que você merece! Pão fresquinho, carne suculenta, ovo, queijo derretido, bacon crocante, presunto, alface e tomate fresquinho. Cada mordida é uma explosão de sabor!', image: 'images/QueroComboXTudo.jpg' },
     { id: 'batatam', name: 'Batata Frita Média', price: 18.90, category: 'Acompanhamentos', desc: 'Batata Crocante.', image: 'images/QueroBatataFrita.jpg' },
     { id: 'batatag', name: 'Batata Frita Grande', price: 24.90, category: 'Acompanhamentos', desc: 'Batata Crocante.', image: 'images/QueroBatataFrita.jpg' },
@@ -57,4 +57,5 @@ const SHIPPING = {
     pricePerKm: 1.50,
     city: 'São Gonçalo'
 };
+
 
