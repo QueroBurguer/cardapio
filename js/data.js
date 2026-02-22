@@ -57,3 +57,18 @@ const COMBO_DRINK_OPTIONS = [
 const ADDON_OPTIONS = [
     { id: 'bacon', name: 'Bacon extra', price: 3.00 },
     { id: 'cheddar', name: 'Cheddar extra', price: 3.00 },
+    { id: 'queijo', name: 'Queijo extra', price: 2.50 },
+    { id: 'ovo', name: 'Ovo', price: 2.50 },
+    { id: 'cebola', name: 'Cebola caramelizada', price: 2.50 },
+];
+
+// Configuração de Frete
+const SHIPPING = {
+    active: true,
+    storeLat: -22.799933,
+    storeLng: -43.018428,
+    basePrice: 4.00,
+    baseKm: 1,
+    pricePerKm: 1.50,
+    city: 'São Gonçalo'
+};
