@@ -18,9 +18,13 @@ const normalizeDigits = (s) => String(s || '').replace(/\D+/g, '');
 const isMobile = () => window.matchMedia('(max-width: 960px)').matches;
 
 // ========= ORDEM DE CATEGORIAS (PRIORIDADE) =========
-const PRIORITY_CATEGORIES = [
+const PRIORITY_FIRST = [
   'Quero Combo',
   'Quero Artesanal'
+];
+
+const PRIORITY_LAST = [
+  'Bebidas'
 ];
 
 function sortCategoriesWithPriority(categories) {
@@ -664,3 +668,4 @@ function init() {
 }
 
 init();
+
