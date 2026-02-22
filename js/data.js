@@ -19,7 +19,8 @@ const PRODUCTS = [
     { id: 'comboxsalada', name: 'Combo X-Salada', price: 16.50, category: 'Combos', desc: '1 X-Salada + Batata Frita + Guaramor.', image: 'images/QueroComboXSalada.jpg' },
     { id: 'comboduplo', name: 'Combo Burguer Duplo', price: 17.50, category: 'Combos', desc: '1 Hamburguer Duplo + Batata Frita + Guaramor.', image: 'images/QueroComboBurguerDuplo.jpg' },
     { id: 'comboxtudo', name: 'Combo X-Tudo', price: 18.90, category: 'Combos', desc: '1 X-Tudo + Batata Frita + Guaramor.', image: 'images/QueroComboXTudo.jpg' },
-    { id: 'combocasal', name: 'Combo Casal', price: 45.30, category: 'Combos', desc: '2 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/QueroComboXSalada.jpg' },
+    { id: 'combosmash', name: 'Combo Smash', price: 24.90, category: 'Combos', desc: '1 Quero Smash + Batata Frita + Guaramor.', image: 'images/combo1.jpg' },
+    { id: 'combocasal', name: 'Combo Casal', price: 45.30, category: 'Combos', desc: '2 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/combo_familia.jpg' },
     { id: 'combofamilia1', name: 'Combo Família 1', price: 58.50, category: 'Combos', desc: '3 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/combof1.jpeg' },
     { id: 'combofamilia2', name: 'Combo Família 2', price: 69.90, category: 'Combos', desc: '4 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/combof2.jpeg' },
 
