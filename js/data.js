@@ -1,5 +1,5 @@
 // Ordem de prioridade das categorias no menu
-const PRIORITY_CATEGORIES = ['Lanches', 'Combos', 'Acompanhamentos', 'Bebidas'];
+const PRIORITY_CATEGORIES = ['Lanches', 'Tradicionais', 'Combos', 'Acompanhamentos', 'Bebidas'];
 
 const PRODUCTS = [
     // ========= LANCHES ARTESANAIS =========
@@ -9,7 +9,7 @@ const PRODUCTS = [
     { id: 'qbpredileto', name: 'Quero Burguer Predileto', price: 24.80, category: 'Lanches', desc: 'Pão, baconese, tomate, picles, carne 120g, cheddar, cebola caramelizada, bacon.', image: 'images/QueroSupremoBurguer.jpg' },
 
     // ========= LANCHES PADRÃO =========
-    { id: 'qbburguer', name: 'Quero Burguer Kids', price: 8.50, category: 'Lanches', desc: 'Pão, carne, queijo, maionese temperada.', image: 'images/QueroMcBurguer.jpg' },
+    { id: 'qbburguer', name: 'Quero Burguer Kids', price: 8.50, category: 'Tradicionais', desc: 'Pão, carne, queijo, maionese temperada.', image: 'images/QueroMcBurguer.jpg' },
     { id: 'qbxsalada', name: 'Quero X-Salada', price: 11.90, category: 'Lanches', desc: 'Pão, carne, tomate, alface, cebola roxa, maionese temperada.', image: 'images/QueroXSalada.jpg' },
     { id: 'qbduplo', name: 'Quero Burger Duplo', price: 12.50, category: 'Lanches', desc: 'Pão, maionese temperada, 2 carnes, queijo, bacon.', image: 'images/QueroBurguerDuplo.jpg' },
     { id: 'qbxtudo', name: 'Quero X-Tudo', price: 13.50, category: 'Lanches', desc: 'Pão, carne, ovo, queijo, bacon, presunto, alface, tomate.', image: 'images/QueroXTudo.jpg' },
@@ -78,4 +78,5 @@ const SHIPPING = {
     pricePerKm: 1.50,
     city: 'São Gonçalo'
 };
+
 
