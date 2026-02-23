@@ -1,5 +1,5 @@
 // Ordem de prioridade das categorias no menu
-const PRIORITY_CATEGORIES = ['Lanches', 'Tradicionais', 'Combos', 'Acompanhamentos', 'Bebidas'];
+const PRIORITY_CATEGORIES = ['Artesanais', 'Tradicionais', 'Combos', 'Acompanhamentos', 'Bebidas'];
 
 const PRODUCTS = [
     // ========= LANCHES ARTESANAIS =========
@@ -78,5 +78,6 @@ const SHIPPING = {
     pricePerKm: 1.50,
     city: 'São Gonçalo'
 };
+
 
 
