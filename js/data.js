@@ -46,8 +46,8 @@ const PRODUCTS = [
 const DRINK_OPTIONS = [
     { id: 'coca_lata', name: 'Coca-Cola Lata 350ml', price: 6.00 },
     { id: 'guarana_lata', name: 'Guaraná Lata 350ml', price: 5.50 },
-    { id: 'suco_uva', name: 'Suco Uva 300ml', price: 6.50 },
-    { id: 'agua', name: 'Água 500ml', price: 3.00 },
+    { id: 'fanta_uva', name: 'Fanta Uva 350ml', price: 6.00 },
+    { id: 'flexa_guarana', name: 'Flexa Guaraná 2l', price: 7.00}
 ];
 
 // Opções exclusivas para Combos (Casal, Família 3, Família 4)
@@ -78,6 +78,7 @@ const SHIPPING = {
     pricePerKm: 1.50,
     city: 'São Gonçalo'
 };
+
 
 
 
