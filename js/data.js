@@ -3,16 +3,16 @@ const PRIORITY_CATEGORIES = ['Artesanais', 'Tradicionais', 'Combos', 'Acompanham
 
 const PRODUCTS = [
     // ========= LANCHES ARTESANAIS =========
-    { id: 'qbsmash', name: 'Quero Smash', price: 18.90, category: 'Lanches', desc: 'Pão, maionese de bacon, carne (90g), cheddar, cebola caramelizada.', image: 'images/QueroSmashBurguer.jpg' },
-    { id: 'qbespecial', name: 'Quero Burguer Especial', price: 22.50, category: 'Lanches', desc: 'Pão, maionese de bacon, carne 120g, cheddar, tomate, alface, cebola roxa.', image: 'images/QueroBurguerEspecial.jpg' },
-    { id: 'qbsmashduplo', name: 'Quero Smash Duplo', price: 23.90, category: 'Lanches', desc: 'Pão, maionese de bacon, 2 carnes 90g, queijo, bacon.', image: 'images/QueroXDuploBurguer.jpg' },
-    { id: 'qbpredileto', name: 'Quero Burguer Predileto', price: 24.80, category: 'Lanches', desc: 'Pão, baconese, tomate, picles, carne 120g, cheddar, cebola caramelizada, bacon.', image: 'images/QueroSupremoBurguer.jpg' },
+    { id: 'qbsmash', name: 'Quero Smash', price: 18.90, category: 'Artesanais', desc: 'Pão, maionese de bacon, carne (90g), cheddar, cebola caramelizada.', image: 'images/QueroSmashBurguer.jpg' },
+    { id: 'qbespecial', name: 'Quero Burguer Especial', price: 22.50, category: 'Artesanais', desc: 'Pão, maionese de bacon, carne 120g, cheddar, tomate, alface, cebola roxa.', image: 'images/QueroBurguerEspecial.jpg' },
+    { id: 'qbsmashduplo', name: 'Quero Smash Duplo', price: 23.90, category: 'Artesanais', desc: 'Pão, maionese de bacon, 2 carnes 90g, queijo, bacon.', image: 'images/QueroXDuploBurguer.jpg' },
+    { id: 'qbpredileto', name: 'Quero Burguer Predileto', price: 24.80, category: 'Artesanais', desc: 'Pão, baconese, tomate, picles, carne 120g, cheddar, cebola caramelizada, bacon.', image: 'images/QueroSupremoBurguer.jpg' },
 
     // ========= LANCHES PADRÃO =========
     { id: 'qbburguer', name: 'Quero Burguer Kids', price: 8.50, category: 'Tradicionais', desc: 'Pão, carne, queijo, maionese temperada.', image: 'images/QueroMcBurguer.jpg' },
-    { id: 'qbxsalada', name: 'Quero X-Salada', price: 11.90, category: 'Lanches', desc: 'Pão, carne, tomate, alface, cebola roxa, maionese temperada.', image: 'images/QueroXSalada.jpg' },
-    { id: 'qbduplo', name: 'Quero Burger Duplo', price: 12.50, category: 'Lanches', desc: 'Pão, maionese temperada, 2 carnes, queijo, bacon.', image: 'images/QueroBurguerDuplo.jpg' },
-    { id: 'qbxtudo', name: 'Quero X-Tudo', price: 13.50, category: 'Lanches', desc: 'Pão, carne, ovo, queijo, bacon, presunto, alface, tomate.', image: 'images/QueroXTudo.jpg' },
+    { id: 'qbxsalada', name: 'Quero X-Salada', price: 11.90, category: 'Tradicionais', desc: 'Pão, carne, tomate, alface, cebola roxa, maionese temperada.', image: 'images/QueroXSalada.jpg' },
+    { id: 'qbduplo', name: 'Quero Burger Duplo', price: 12.50, category: 'Tradicionais', desc: 'Pão, maionese temperada, 2 carnes, queijo, bacon.', image: 'images/QueroBurguerDuplo.jpg' },
+    { id: 'qbxtudo', name: 'Quero X-Tudo', price: 13.50, category: 'Tradicionais', desc: 'Pão, carne, ovo, queijo, bacon, presunto, alface, tomate.', image: 'images/QueroXTudo.jpg' },
 
     // ========= COMBOS =========
     { id: 'comboburguer', name: 'Combo Burguer Kids', price: 14.50, category: 'Combos', desc: '1 Hamburguer + Batata Frita + Guaramor.', image: 'images/QueroComboKids.jpg' },
@@ -78,6 +78,7 @@ const SHIPPING = {
     pricePerKm: 1.50,
     city: 'São Gonçalo'
 };
+
 
 
 
