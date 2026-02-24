@@ -27,8 +27,11 @@
             </div>
 
             <div class="brand">
-                <h1>Quero Burguer</h1>
-                <p>Hambúrgueres Artesanais , Tradicionais & Combos</p>
+                <div class="brandHeader">
+                    <h1>Quero Burguer</h1>
+                    <div id="storeStatus" class="status-badge"></div>
+                </div>
+                <p>Hambúrgueres artesanais & Combos</p>
             </div>
         </div>
 
@@ -49,46 +52,82 @@
             </div>
         </div>
     </header>
+    <div class="promo-banner">
+        🔥 PROMOÇÃO RELÂMPAGO: ATÉ 40% DE DESCONTO! 🔥
+    </div>
 
     <div class="overlay" id="overlay"></div>
 
-    <main class="wrap">
-        <section id="productGrid">
-            <!-- Produtos injetados via JS -->
-        </section>
+    <main class="content" id="menuContainer">
+        <!-- Todas as categorias serão renderizadas aqui dinamicamente -->
+    </main>
 
-        <!-- Carrinho Desktop / Mobile Bottom Sheet -->
-        <aside class="cart" id="cartBox">
-            <div class="cartHeader">
-                <h3>Seu Pedido</h3>
-                <button id="toggleCartBtn" class="chip" type="button">Fechar</button>
-            </div>
+    <!-- Carrinho Desktop / Mobile Bottom Sheet -->
+    <aside class="cart" id="cartBox">
+        <div class="cartHeader">
+            <h3>Seu Pedido</h3>
+            <button id="toggleCartBtn" class="chip" type="button">Fechar</button>
+        </div>
 
+        <!-- Passo 1: ITENS -->
+        <div id="cartStep1" class="cart-step active">
             <div class="items" id="cartItems">
                 <!-- Itens do carrinho -->
             </div>
+            <div class="cart-actions-step">
+                <button class="btn" id="nextToStep2" disabled>Continuar para Entrega</button>
+                <button class="btn clear" id="clearBtn" disabled>Limpar Carrinho</button>
+            </div>
+        </div>
 
+        <!-- Passo 2: ENTREGA -->
+        <div id="cartStep2" class="cart-step">
             <div class="note">
+                <div class="modalLabel">Dados de Entrega</div>
                 <div class="form-row">
                     <input id="customerName" placeholder="Seu Nome (Obrigatório)" required />
-                    <input id="customerPhone" placeholder="Seu Telefone / WhatsApp" inputmode="numeric" />
+                    <input id="customerPhone" placeholder="WhatsApp (Opcional)" inputmode="numeric" />
                 </div>
                 <div class="form-row" style="grid-template-columns: 1fr auto; align-items:start">
-                    <input id="customerAddress" placeholder="Endereço de Entrega (Rua, Número, Bairro, Cidade)" />
-                    <button type="button" class="btn" id="calcShippingBtn"
-                        style="padding:10px; font-size:12px; height:42px; background:var(--bg-body); border:1px solid var(--border-light)">
-                        Calcular
-                    </button>
+                    <input id="customerAddress" placeholder="Endereço (Rua, Número, Bairro)" />
+                    <button type="button" class="btn" id="calcShippingBtn">Calcular</button>
                 </div>
+                <div class="delivery-info">
+                    <span id="distanceVal"></span>
+                    <span id="shippingVal">Aguardando endereço...</span>
+                </div>
+            </div>
+            <div class="cart-actions-step">
+                <button class="btn" id="nextToStep3">Continuar para Pagamento</button>
+                <button class="btn clear" id="backToStep1">Voltar</button>
+            </div>
+        </div>
 
+        <!-- Passo 3: PAGAMENTO -->
+        <div id="cartStep3" class="cart-step">
+            <div class="note">
+                <div class="modalLabel">Forma de Pagamento</div>
                 <select id="paymentMethod">
-                    <option value="Pix">Pagamento via Pix</option>
+                    <option value="Pix">Pagamento via Pix (Copia e Cola)</option>
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Cartão (Crédito)">Cartão de Crédito</option>
                     <option value="Cartão (Débito)">Cartão de Débito</option>
                 </select>
 
-                <textarea id="noteText" placeholder="Alguma observação geral?"></textarea>
+                <div id="pixCopySection" style="display:none; margin-bottom:16px;">
+                    <div class="pix-box">
+                        <small>Chave Pix (CNPJ):</small>
+                        <div class="pix-key-row">
+                            <code id="pixKeyDisplay">62120634000135</code>
+                            <button id="copyPixBtn" class="chip">Copiar</button>
+                        </div>
+                        <p style="font-size:10px; color:var(--text-muted); margin-top:4px">Após o pagamento, envie o
+                            comprovante no WhatsApp.</p>
+                    </div>
+                </div>
+
+                <div class="modalLabel">Observações do Pedido</div>
+                <textarea id="noteText" placeholder="Ex: Chave do prédio, deixar na portaria..."></textarea>
             </div>
 
             <div class="totals">
@@ -97,8 +136,8 @@
                     <span id="subtotalVal">R$ 0,00</span>
                 </div>
                 <div class="row" style="color:var(--text-muted); font-size:13px; margin-bottom:4px">
-                    <span>Frete <small id="distanceVal"></small></span>
-                    <span id="shippingVal">--</span>
+                    <span>Frete</span>
+                    <span id="shippingValTotal">--</span>
                 </div>
                 <div class="row" style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">
                     <span style="font-weight:700">Total Final</span>
@@ -106,11 +145,12 @@
                 </div>
             </div>
 
-            <div class="actions">
-                <button class="btn whatsapp" id="sendBtn" disabled>Enviar Pedido no WhatsApp</button>
-                <button class="btn clear" id="clearBtn" disabled>Limpar Carrinho</button>
+            <div class="cart-actions-step">
+                <button class="btn whatsapp" id="sendBtn" disabled>Finalizar no WhatsApp 🚀</button>
+                <button class="btn clear" id="backToStep2">Voltar</button>
             </div>
-        </aside>
+        </div>
+    </aside>
     </main>
 
     <!-- Botão Flutuante Carrinho (Mobile) -->
@@ -143,23 +183,36 @@
                 </div>
             </aside>
 
-            <section class="modalRight">
-                <div class="modalSection">
-                    <div class="modalLabel">Escolha sua Bebida</div>
-                    <div class="modalHint">Opcional - Selecione apenas 1</div>
-                    <div class="optionsGrid" id="drinkOptions"></div>
+            <section class="modalRight" id="customizerSteps">
+                <!-- PASSO 1: PERSONALIZAÇÃO -->
+                <div class="custom-step active" id="customStepBasic">
+                    <div class="modalSection">
+                        <div class="modalLabel">Escolha sua Bebida</div>
+                        <div class="modalHint">Opcional - Selecione apenas 1</div>
+                        <div class="optionsGrid" id="drinkOptions"></div>
+                    </div>
+
+                    <div class="modalSection">
+                        <div class="modalLabel">Turbine seu Lanche</div>
+                        <div class="modalHint">Adicionais - Pode selecionar vários</div>
+                        <div class="optionsGrid" id="addonOptions"></div>
+                    </div>
+
+                    <div class="modalSection">
+                        <div class="modalLabel">Observações deste item</div>
+                        <input class="note" style="width:100%" id="itemNote"
+                            placeholder="Ex: Sem cebola, ponto da carne..." />
+                    </div>
                 </div>
 
-                <div class="modalSection">
-                    <div class="modalLabel">Turbine seu Lanche</div>
-                    <div class="modalHint">Adicionais - Pode selecionar vários</div>
-                    <div class="optionsGrid" id="addonOptions"></div>
-                </div>
-
-                <div class="modalSection">
-                    <div class="modalLabel">Observações deste item</div>
-                    <input class="note" style="width:100%" id="itemNote"
-                        placeholder="Ex: Sem cebola, ponto da carne..." />
+                <!-- PASSO 2: UPSELL DINÂMICO -->
+                <div class="custom-step" id="upsellStep" style="display:none">
+                    <div class="upsell-container">
+                        <div id="upsellTitle" class="modalLabel">Gostaria de adicionar batata?</div>
+                        <div id="upsellOptionGrid" class="optionsGrid">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
                 </div>
             </section>
         </div>
@@ -179,4 +232,3 @@
 </body>
 
 </html>
-
