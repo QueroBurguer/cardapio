@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" />
+    <meta name="description"
+        content="Cardápio digital Quero Burguer. Peça seu hambúrguer artesanal favorito pelo WhatsApp." />
+    <meta name="theme-color" content="#0f0f10" />
+
+    <title>Quero Burguer – Cardápio Digital</title>
+
+    <!-- Preconnect para Google Fonts (opcional, se formos usar) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+    <header>
+        <div class="topbar">
+            <div class="logoBox">
+                <img src="images/logo.jpeg" alt="Quero Burguer"
+                    onerror="this.style.display='none'; this.parentElement.innerHTML='<b style=&quot;color:#ffb000;font-size:14px&quot;>QB</b>';" />
+            </div>
+
+            <div class="brand">
+                <div class="brandHeader">
+                    <h1>Quero Burguer</h1>
+                    <div id="storeStatus" class="status-badge"></div>
+                </div>
+                <p>Hambúrgueres artesanais & Combos</p>
+            </div>
+        </div>
+
+        <div class="catbar">
+            <div class="catrow">
+                <nav class="nav" id="categoryChips">
+                    <!-- Categorias injetadas via JS -->
+                </nav>
+
+                <div class="search">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor"
+                            stroke-width="2" />
+                        <path d="M16.5 16.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <input id="searchInput" type="search" placeholder="O que você procura hoje?" />
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="promo-banner">
+        🔥 PROMOÇÃO RELÂMPAGO: ATÉ 40% DE DESCONTO! 🔥
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+
+    <div class="main-layout">
+
+        <main class="content" id="menuContainer">
+            <!-- Todas as categorias serão renderizadas aqui dinamicamente -->
+        </main>
+
+        <!-- Carrinho Desktop / Mobile Bottom Sheet -->
+        <aside class="cart" id="cartBox">
+            <div class="cartHeader">
+                <h3>Seu Pedido</h3>
+                <button id="toggleCartBtn" class="chip" type="button" style="display: none;">Fechar</button>
+            </div>
+
+            <!-- Passo 1: ITENS -->
+            <div id="cartStep1" class="cart-step active">
+                <div class="items" id="cartItems">
+                    <!-- Itens do carrinho -->
+                </div>
+
+                <div class="totals" id="cartSummaryStep1">
+                    <div class="row"
+                        style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">
+                        <span style="font-weight:700">Subtotal</span>
+                        <strong id="subtotalStep1" style="font-size:18px; color:var(--primary)">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <div class="cart-actions-step">
+                    <button class="btn whatsapp" id="nextToStep2" disabled>Efetuar Compra</button>
+                    <button class="btn clear" id="clearBtn" disabled>Limpar Carrinho</button>
+                </div>
+            </div>
+
+            <!-- Passo 2: ENTREGA -->
+            <div id="cartStep2" class="cart-step">
+                <div class="note">
+                    <div class="modalLabel">Dados de Entrega</div>
+                    <div class="form-row">
+                        <input id="customerName" placeholder="Seu Nome (Obrigatório)" required />
+                        <input id="customerPhone" placeholder="WhatsApp (Opcional)" inputmode="numeric" />
+                    </div>
+                    <div class="form-row" style="grid-template-columns: 1fr auto; align-items:start">
+                        <input id="customerAddress" placeholder="Endereço (Rua, Número, Bairro)" />
+                        <button type="button" class="btn" id="calcShippingBtn">Calcular</button>
+                    </div>
+                    <div class="delivery-info">
+                        <span id="distanceVal"></span>
+                        <span id="shippingVal">Aguardando endereço...</span>
+                    </div>
+                </div>
+                <div class="cart-actions-step">
+                    <button class="btn" id="nextToStep3">Continuar para Pagamento</button>
+                    <button class="btn clear" id="backToStep1">Voltar pro Carrinho</button>
+                </div>
+            </div>
+
+            <!-- Passo 3: PAGAMENTO -->
+            <div id="cartStep3" class="cart-step">
+                <div class="note">
+                    <div class="modalLabel">Forma de Pagamento</div>
+                    <select id="paymentMethod">
+                        <option value="Pix">Pagamento via Pix (Copia e Cola)</option>
+                        <option value="Dinheiro">Dinheiro</option>
+                        <option value="Cartão (Crédito)">Cartão de Crédito</option>
+                        <option value="Cartão (Débito)">Cartão de Débito</option>
+                    </select>
+
+                    <div id="pixCopySection" style="display:none; margin-bottom:16px;">
+                        <div class="pix-box">
+                            <small>Chave Pix (CNPJ):</small>
+                            <div class="pix-key-row">
+                                <code id="pixKeyDisplay">62120634000135</code>
+                                <button id="copyPixBtn" class="chip">Copiar</button>
+                            </div>
+                            <p style="font-size:10px; color:var(--text-muted); margin-top:4px">Após o pagamento, envie o
+                                comprovante no WhatsApp.</p>
+                        </div>
+                    </div>
+
+                    <div class="modalLabel">Observações do Pedido</div>
+                    <textarea id="noteText" placeholder="Ex: Chave do prédio, deixar na portaria..."></textarea>
+                </div>
+
+                <div class="totals">
+                    <div class="row" style="color:var(--text-muted); font-size:13px; margin-bottom:4px">
+                        <span>Subtotal</span>
+                        <span id="subtotalVal">R$ 0,00</span>
+                    </div>
+                    <div class="row" style="color:var(--text-muted); font-size:13px; margin-bottom:4px">
+                        <span>Frete</span>
+                        <span id="shippingValTotal">--</span>
+                    </div>
+                    <div class="row"
+                        style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">
+                        <span style="font-weight:700">Total Final</span>
+                        <strong id="total" style="font-size:18px; color:var(--primary)">R$ 0,00</strong>
+                    </div>
+                </div>
+
+                <div class="cart-actions-step">
+                    <button class="btn whatsapp" id="sendBtn" disabled>Finalizar no WhatsApp 🚀</button>
+                    <button class="btn clear" id="backToStep2">Voltar pro Endereço</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Modal de Personalização -->
+    <div class="modal" id="customModal" aria-hidden="true" role="dialog">
+        <div class="modalHeader">
+            <div>
+                <div class="modalTitle" id="customTitle">Nome do Produto</div>
+                <div class="modalSub" id="customSub">Detalhes do item</div>
+            </div>
+            <button class="chip" type="button" id="customCloseBtn">Fechar</button>
+        </div>
+
+        <div class="modalBody">
+            <aside class="modalLeft">
+                <img id="modalProductImg" class="modalLeftImg" src="" alt="Produto" />
+                <div>
+                    <div id="modalProductName" class="modalLeftName">Nome</div>
+                    <p id="modalProductDesc" class="modalLeftDesc">Descrição...</p>
+                </div>
+            </aside>
+
+            <section class="modalRight" id="customizerSteps">
+                <!-- PASSO 1: PERSONALIZAÇÃO -->
+                <div class="custom-step active" id="customStepBasic">
+                    <div class="modalSection">
+                        <div class="modalLabel">Escolha sua Bebida</div>
+                        <div class="modalHint">Opcional - Selecione apenas 1</div>
+                        <div class="optionsGrid" id="drinkOptions"></div>
+                    </div>
+
+                    <div class="modalSection">
+                        <div class="modalLabel">Turbine seu Lanche</div>
+                        <div class="modalHint">Adicionais - Pode selecionar vários</div>
+                        <div class="optionsGrid" id="addonOptions"></div>
+                    </div>
+
+                    <div class="modalSection">
+                        <div class="modalLabel">Observações deste item</div>
+                        <input class="note" style="width:100%" id="itemNote"
+                            placeholder="Ex: Sem cebola, ponto da carne..." />
+                    </div>
+                </div>
+
+                <!-- PASSO 2: UPSELL DINÂMICO -->
+                <div class="custom-step" id="upsellStep" style="display:none">
+                    <div class="upsell-container">
+                        <div id="upsellTitle" class="modalLabel">Gostaria de adicionar batata?</div>
+                        <div id="upsellOptionGrid" class="optionsGrid">
+                            <!-- Injetado via JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="modalFooter">
+            <div class="modalTotal">
+                <div class="modalHint" style="font-size:12px;margin-bottom:2px">Total a adicionar</div>
+                <div class="modalPrice" id="customItemPrice">R$ 0,00</div>
+            </div>
+            <button class="btn whatsapp" type="button" id="customConfirmBtn">Confirmar e Adicionar</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/data.js?v=20260224_v5"></script>
+    <script src="js/script.js?v=20260224_v5"></script>
+</body>
+
+</html>
