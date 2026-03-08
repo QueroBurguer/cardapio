@@ -20,7 +20,7 @@ var PRODUCTS = [
     { id: 'qbsmash', name: 'Quero Smash', price: 18.90, promoPrice: 16.90, category: 'Artesanais', desc: 'Pão, maionese de bacon, carne (90g), cheddar, cebola caramelizada.', image: 'images/QueroSmashBurguer.jpg' },
     { id: 'qbespecial', name: 'Quero Burguer Especial', price: 22.50, category: 'Artesanais', desc: 'Pão, maionese de bacon, carne 120g, cheddar, tomate, alface, cebola roxa.', image: 'images/QueroBurguerEspecial.jpg' },
     { id: 'qbsmashduplo', name: 'Quero Smash Duplo', price: 23.90, category: 'Artesanais', desc: 'Pão, maionese de bacon, 2 carnes 90g, queijo, bacon.', image: 'images/QueroSmashDuplo.png' },
-    { id: 'qbpredileto', name: 'Quero Burguer Predileto', price: 24.80, category: 'Artesanais', desc: 'Pão, baconese, tomate, picles, carne 120g, cheddar, cebola caramelizada, bacon.', image: 'images/QueroSupremoBurguer.jpg' },
+    { id: 'qbpredileto', name: 'Quero Burguer Predileto', price: 24.80, category: 'Artesanais', desc: 'Pão, baconese, tomate, picles, carne 120g, cheddar, cebola caramelizada, bacon.', image: 'images/Predileto.jpg' },
 
     // ========= LANCHES PADRÃO =========
     { id: 'qbburguer', name: 'Quero Burguer Kids', price: 8.90, category: 'Tradicionais', desc: 'Pão, carne, queijo, maionese temperada.', image: 'images/QueroBurguerKids.jpg' },
