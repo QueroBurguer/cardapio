@@ -1,5 +1,41 @@
-console.log('Quero Burguer Script v2.5 loaded');
 const WHATSAPP_PHONE = '5521992497289';
+
+// ========= INTEGRAÇÃO COM SISTEMA DE ESTOQUE =========
+async function loadConfigs() {
+    try {
+        const resCat = await fetch('http://localhost:3000/api/data/catalog');
+        const dynamicCatalog = await resCat.json();
+        if (Array.isArray(dynamicCatalog) && dynamicCatalog.length > 0) {
+            PRODUCTS = dynamicCatalog;
+            console.log('✅ Catálogo dinâmico carregado da API');
+        }
+
+        const resSet = await fetch('http://localhost:3000/api/data/settings');
+        const settings = await resSet.json();
+        if (settings && settings.businessName) {
+            document.title = `${settings.businessName} – Cardápio Digital`;
+            const h1 = document.querySelector('.brand h1');
+            if (h1) h1.textContent = settings.businessName;
+        }
+    } catch (e) {
+        console.error('Erro ao carregar dados da API:', e);
+    }
+}
+
+// Inicializa configurações
+loadConfigs().then(() => {
+    // Re-renderiza quando a API responder para sobrescrever os dados padrao do data.js
+    if (typeof renderCategories === 'function') renderCategories();
+    if (typeof renderProducts === 'function') renderProducts();
+});
+
+// Listener temporizado para buscar alteracoes no cardapio (cada 30 seg)
+setInterval(() => {
+    loadConfigs().then(() => {
+        if (typeof renderCategories === 'function') renderCategories();
+        if (typeof renderProducts === 'function') renderProducts();
+    });
+}, 30000);
 
 // ========= ESTADO =========
 const state = {
@@ -109,6 +145,9 @@ const dom = {
     get backToS2() { return getEl('backToStep2'); },
     get shippingValTotal() { return getEl('shippingValTotal'); },
     get subtotalStep1() { return getEl('subtotalStep1'); },
+    get fabCart() { return getEl('fabCart'); },
+    get cartBadge() { return getEl('cartBadge'); },
+    get toggleCartBtn() { return getEl('toggleCartBtn'); },
 
     // Pix & Upsell
     get pixCopySection() { return getEl('pixCopySection'); },
@@ -128,6 +167,7 @@ const customUI = {
     drinkId: null,
     addonIds: new Set(),
     isSpecialCombo: false,
+    isRegularCombo: false,
     upsellPhase: 0 // 0: Basic, 1: Batata, 2: Bebida
 };
 
@@ -415,7 +455,16 @@ function renderCart() {
     if (dom.clearBtn) dom.clearBtn.disabled = state.cart.length === 0;
     if (dom.nextToS2) dom.nextToS2.disabled = state.cart.length === 0;
 
-    // Sem FAB e CartBadge agora que o carrinho é persistente
+    // Badge do FAB
+    if (dom.cartBadge) {
+        const totalQty = state.cart.reduce((s, i) => s + i.qty, 0);
+        dom.cartBadge.textContent = totalQty;
+        dom.cartBadge.style.display = totalQty > 0 ? 'grid' : 'none';
+
+        if (dom.fabCart) {
+            dom.fabCart.classList.toggle('filled', totalQty > 0);
+        }
+    }
 }
 
 // ========= CÁLCULO DE FRETE (NOMINATIM / HAVERSINE) =========
@@ -522,6 +571,7 @@ function setCustomOpen(open) {
                 dom.drinkBox.innerHTML = '';
                 dom.addonBox.innerHTML = '';
                 customUI.isSpecialCombo = false;
+                customUI.isRegularCombo = false;
                 customUI.drinkId = null;
             }
         }, 200);
@@ -546,7 +596,15 @@ function openCustomizer(product, qty = 1) {
     dom.modalProductDesc.textContent = product.desc || '';
     dom.customTitle.textContent = product.name;
 
-    renderOptionCards(dom.drinkBox, (product.id === 'comboburguer' || product.id === 'combocasal') ? DRINK_OPTIONS : [], 'drink');
+    customUI.isSpecialCombo = ['combocasal', 'combofamilia1', 'combofamilia2'].includes(product.id);
+    customUI.isRegularCombo = ['comboburguer', 'comboxsalada', 'comboduplo', 'comboxtudo', 'combosmash'].includes(product.id);
+
+    let drinkOpts = [];
+    if (customUI.isSpecialCombo) drinkOpts = COMBO_DRINK_OPTIONS;
+    else if (customUI.isRegularCombo) drinkOpts = REGULAR_COMBO_DRINK_OPTIONS;
+    else if ((product.category || '').toLowerCase().includes('lanches')) drinkOpts = DRINK_OPTIONS;
+
+    renderOptionCards(dom.drinkBox, drinkOpts, 'drink');
     renderOptionCards(dom.addonBox, ADDON_OPTIONS, 'addon');
     updateCustomPrice();
 
@@ -603,7 +661,10 @@ function updateCustomPrice() {
     let extras = 0;
 
     // Usa lista correta para pegar o preço
-    const drinkList = customUI.isSpecialCombo ? COMBO_DRINK_OPTIONS : DRINK_OPTIONS;
+    let drinkList = DRINK_OPTIONS;
+    if (customUI.isSpecialCombo) drinkList = COMBO_DRINK_OPTIONS;
+    else if (customUI.isRegularCombo) drinkList = REGULAR_COMBO_DRINK_OPTIONS;
+
     const drink = drinkList.find(d => d.id === customUI.drinkId);
 
     if (drink) extras += drink.price;
@@ -692,7 +753,12 @@ function renderUpsellOption(product) {
 
 function finishOrder() {
     const base = getEffectivePrice(customUI.product);
-    const drink = DRINK_OPTIONS.find(d => d.id === customUI.drinkId);
+
+    let drinkList = DRINK_OPTIONS;
+    if (customUI.isSpecialCombo) drinkList = COMBO_DRINK_OPTIONS;
+    else if (customUI.isRegularCombo) drinkList = REGULAR_COMBO_DRINK_OPTIONS;
+
+    const drink = drinkList.find(d => d.id === customUI.drinkId);
     const addons = ADDON_OPTIONS.filter(a => customUI.addonIds.has(a.id));
 
     let finalName = customUI.product.name;
@@ -795,6 +861,32 @@ function buildWhatsAppText() {
     return encodeURIComponent(lines.join('\n'));
 }
 
+async function recordSaleLocally() {
+    if (state.cart.length === 0) return;
+
+    try {
+        const payload = {
+            items: state.cart.map(item => ({
+                id: item.id,
+                baseId: item.baseId, // Isto é o que o Backend lê para dar a baixa
+                name: item.name,
+                qty: item.qty,
+                price: item.price
+            }))
+        };
+
+        // Dispara pra API dando o sinal q a venda finalizou
+        await fetch('http://localhost:3000/api/sales', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        console.log('Venda gravada para o Painel logístico!');
+    } catch (e) {
+        console.error('Erro ao gravar venda remotamente:', e);
+    }
+}
+
 function handleCheckout() {
     if (state.cart.length === 0) return;
     if (!isStoreOpen()) {
@@ -807,6 +899,9 @@ function handleCheckout() {
         dom.customerName.focus();
         return;
     }
+
+    // Grava a venda para o sistema de estoque (LocalStorage compartilhado)
+    recordSaleLocally();
 
     const url = `https://wa.me/${WHATSAPP_PHONE}?text=${buildWhatsAppText()}`;
     window.open(url, '_blank');
@@ -833,13 +928,17 @@ function goToCartStep(n) {
 function setCartOpen(open) {
     if (!dom.cartBox || !dom.overlay) return;
     if (open) {
-        dom.cartBox.classList.add('mobile-open');
-        dom.overlay.classList.add('active');
-        goToCartStep(1);
+        dom.cartBox.classList.add('open');
+        dom.overlay.classList.add('show');
     } else {
-        dom.cartBox.classList.remove('mobile-open');
-        dom.overlay.classList.remove('active');
+        dom.cartBox.classList.remove('open');
+        dom.overlay.classList.remove('show');
     }
+}
+
+function toggleCart() {
+    const isOpen = dom.cartBox.classList.contains('open');
+    setCartOpen(!isOpen);
 }
 
 // ========= INIT =========
@@ -891,6 +990,10 @@ function init() {
         // Modal
         if (dom.customConfirmBtn) dom.customConfirmBtn.onclick = handleConfirm;
         if (dom.customCloseBtn) dom.customCloseBtn.onclick = () => setCustomOpen(false);
+
+        // Mobile Cart Toggle
+        if (dom.fabCart) dom.fabCart.onclick = () => setCartOpen(true);
+        if (dom.toggleCartBtn) dom.toggleCartBtn.onclick = () => setCartOpen(false);
 
         renderCategories();
         renderProducts();
