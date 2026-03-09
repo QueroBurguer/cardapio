@@ -160,7 +160,14 @@ const dom = {
     get customStepBasic() { return getEl('customStepBasic'); },
     get upsellStep() { return getEl('upsellStep'); },
     get upsellTitle() { return getEl('upsellTitle'); },
-    get upsellOptionGrid() { return getEl('upsellOptionGrid'); }
+    get upsellOptionGrid() { return getEl('upsellOptionGrid'); },
+
+    // Loyalty & ETA
+    get loyaltySection() { return getEl('loyaltySection'); },
+    get loyaltyMsg() { return getEl('loyaltyMsg'); },
+    get loyaltyFill() { return getEl('loyaltyFill'); },
+    get etaVal() { return getEl('etaVal'); },
+    get etaRow() { return getEl('etaRow'); }
 };
 
 // ========= CUSTOM UI STATE =========
@@ -447,6 +454,12 @@ function renderCart() {
     dom.shippingVal.textContent = state.shipping > 0 ? formatBRL(state.shipping) : (state.distance > 0 ? 'Frete Grátis' : '--');
     if (dom.shippingValTotal) dom.shippingValTotal.textContent = dom.shippingVal.textContent;
     dom.totalDisplay.textContent = formatBRL(subtotal + state.shipping);
+
+    // Cálculo de ETA
+    const prepTime = 20; // 20 min base
+    const distTime = state.distance * 3; // 3 min por KM
+    const totalTime = Math.round(prepTime + distTime);
+    if (dom.etaVal) dom.etaVal.textContent = `${totalTime} - ${totalTime + 10} min`;
 
     if (state.shipping > 0 && dom.shippingVal) {
         dom.shippingVal.textContent = formatBRL(state.shipping);
@@ -916,6 +929,10 @@ function buildWhatsAppText() {
     if (c.pay === 'Pix') lines.push(`_(Aguardando chave Pix do atendente)_`);
     if (c.obs !== 'Sem observação') lines.push(`📝 *Obs Geral:* ${c.obs}`);
 
+    if (state.addressCoords) {
+        lines.push(`\n📍 GPS: ${state.addressCoords.lat},${state.addressCoords.lon}`);
+    }
+
     return encodeURIComponent(lines.join('\n'));
 }
 
@@ -1102,4 +1119,37 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
 } else {
     init();
+}
+
+// Listener para Fidelidade e ETA dinâmico
+document.addEventListener('input', (e) => {
+    if (e.target.id === 'customerPhone') {
+        const val = normalizeDigits(e.target.value);
+        if (val.length >= 10) {
+            checkLoyalty(val);
+        } else {
+            const ls = document.getElementById('loyaltySection');
+            if (ls) ls.style.display = 'none';
+        }
+    }
+});
+
+async function checkLoyalty(phone) {
+    try {
+        const res = await fetch(`http://localhost:3000/api/loyalty/${phone}`);
+        const data = await res.json();
+        const ls = document.getElementById('loyaltySection');
+        const lm = document.getElementById('loyaltyMsg');
+        const lf = document.getElementById('loyaltyFill');
+        if (ls && lm && lf) {
+            ls.style.display = 'block';
+            const count = data.orderCount;
+            const next = data.nextGoal;
+            const prog = (data.target / next) * 100;
+            lm.textContent = data.isVIP ? `⭐ Você é VIP! (${count} pedidos)` : `Você tem ${count} pedido(s)!`;
+            lf.style.width = `${prog}%`;
+        }
+    } catch (e) {
+        console.error('Loyalty API offline');
+    }
 }

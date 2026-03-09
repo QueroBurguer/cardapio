@@ -357,6 +357,37 @@ header {
     }
 }
 
+/* Loyalty and ETA */
+.loyalty-card {
+    background: rgba(255, 176, 0, 0.05);
+    border: 1px dashed var(--primary);
+    padding: 12px;
+    border-radius: var(--radius-md);
+    margin: 12px 0;
+    display: none;
+}
+
+.loyalty-bar-bg {
+    background: rgba(255, 255, 255, 0.1);
+    height: 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+    overflow: hidden;
+}
+
+.loyalty-bar-fill {
+    background: var(--primary);
+    height: 100%;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0%;
+}
+
+#etaRow {
+    color: var(--primary) !important;
+    font-weight: 800;
+    margin-top: 4px;
+}
+
 /* Card de Produto */
 .card {
     background: var(--bg-card);

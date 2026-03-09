@@ -99,6 +99,14 @@
                         <input id="customerName" placeholder="Seu Nome (Obrigatório)" required />
                         <input id="customerPhone" placeholder="WhatsApp (Obrigatório)" inputmode="numeric" required />
                     </div>
+                    <div id="loyaltySection" class="loyalty-card">
+                        <div style="font-size:12px; color:#9b5de5; font-weight:bold" id="loyaltyMsg">Você tem 0 pedidos!
+                        </div>
+                        <div class="loyalty-bar-bg">
+                            <div id="loyaltyFill" class="loyalty-bar-fill"></div>
+                        </div>
+                        <div style="font-size:10px; color:#777; margin-top:4px">Ganhe um brinde a cada 5 pedidos.</div>
+                    </div>
                     <div class="form-row" style="grid-template-columns: 1fr auto; align-items:start">
                         <input id="customerAddress" placeholder="Endereço (Rua, Número, Bairro)" />
                         <button type="button" class="btn" id="calcShippingBtn">Calcular</button>
@@ -144,6 +152,11 @@
                     <div class="row" style="color:var(--text-muted); font-size:13px; margin-bottom:4px">
                         <span>Frete</span>
                         <span id="shippingValTotal">--</span>
+                    </div>
+                    <div class="row" style="color:var(--accent); font-size:13px; margin-bottom:4px; font-weight:bold"
+                        id="etaRow">
+                        <span>Previsão de Entrega</span>
+                        <span id="etaVal">--</span>
                     </div>
                     <div class="row"
                         style="margin-top:8px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05)">
