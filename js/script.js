@@ -1,16 +1,25 @@
 const WHATSAPP_PHONE = '5521992497289';
 
+// =========================================================
+// ⚙️ CONFIGURAÇÃO DO SERVIDOR
+// Para uso na REDE LOCAL (wi-fi da lanchonete), troque para:
+//   const API_BASE_URL = 'http://192.168.86.3:3000';
+// Para uso com TÚNEL PÚBLICO (internet), troque para o link gerado pelo TUNNEL-PUBLICO.bat
+//   const API_BASE_URL = 'https://SEU-LINK.loca.lt';
+// =========================================================
+const API_BASE_URL = 'http://localhost:3000';
+
 // ========= INTEGRAÇÃO COM SISTEMA DE ESTOQUE =========
 async function loadConfigs() {
     try {
-        const resCat = await fetch('http://localhost:3000/api/data/catalog');
+        const resCat = await fetch(`${API_BASE_URL}/api/data/catalog`);
         const dynamicCatalog = await resCat.json();
         if (Array.isArray(dynamicCatalog) && dynamicCatalog.length > 0) {
             PRODUCTS = dynamicCatalog;
             console.log('✅ Catálogo dinâmico carregado da API');
         }
 
-        const resSet = await fetch('http://localhost:3000/api/data/settings');
+        const resSet = await fetch(`${API_BASE_URL}/api/data/settings`);
         const settings = await resSet.json();
         if (settings && settings.businessName) {
             document.title = `${settings.businessName} – Cardápio Digital`;
@@ -293,7 +302,7 @@ function productCard(p) {
 
     function doAdd() {
         const q = parseInt(input.value) || 1;
-        if ((p.category || '').toLowerCase().includes('lanches') || (p.category || '').toLowerCase().includes('combos')) {
+        if ((p.category || '').toLowerCase().includes('lanches') || (p.category || '').toLowerCase().includes('combos') || (p.category || '') === 'Tradicionais' || (p.category || '') === 'Artesanais') {
             openCustomizer(p, q);
         } else {
             addToCart(p, q);
@@ -643,14 +652,27 @@ function openCustomizer(product, qty = 1) {
         if (dom.friesSection) dom.friesSection.style.display = 'none';
     }
 
-    if (customUI.isSpecialCombo || product.category === 'Artesanais') {
+    // Define a lista de adicionais conforme a categoria e o produto
+    let addonList;
+    if (product.category === 'Artesanais') {
+        const isSmash = ['qbsmash', 'qbsmashduplo'].includes(product.id);
+        // Smash: mostra Carne Smashada 80g, oculta Carne 120g
+        // Demais artesanais: mostra Carne 120g, oculta Carne Smashada 80g
+        addonList = ARTESANAIS_ADDON_OPTIONS.filter(a =>
+            isSmash ? a.id !== 'art_carne120' : a.id !== 'art_smash'
+        );
+    } else {
+        addonList = ADDON_OPTIONS;
+    }
+
+    if (customUI.isSpecialCombo) {
         if (dom.addonSection) dom.addonSection.style.display = 'none';
     } else {
         if (dom.addonSection) dom.addonSection.style.display = 'block';
     }
 
     renderOptionCards(dom.drinkBox, drinkOpts, 'drink');
-    renderOptionCards(dom.addonBox, ADDON_OPTIONS, 'addon');
+    renderOptionCards(dom.addonBox, addonList, 'addon');
     updateCustomPrice();
 
     const effectiveBase = getEffectivePrice(product);
@@ -728,7 +750,8 @@ function updateCustomPrice() {
     }
 
     customUI.addonIds.forEach(id => {
-        const add = ADDON_OPTIONS.find(a => a.id === id);
+        // Procura primeiro na lista padrão, depois na de artesanais
+        const add = ADDON_OPTIONS.find(a => a.id === id) || ARTESANAIS_ADDON_OPTIONS.find(a => a.id === id);
         if (add) extras += add.price;
     });
 
@@ -828,7 +851,8 @@ function finishOrder() {
         fries = friesOpts.find(f => f.id === customUI.friesId);
     }
 
-    const addons = ADDON_OPTIONS.filter(a => customUI.addonIds.has(a.id));
+    const allAddonsList = [...ADDON_OPTIONS, ...ARTESANAIS_ADDON_OPTIONS];
+    const addons = allAddonsList.filter(a => customUI.addonIds.has(a.id));
 
     let finalName = customUI.product.name;
     const parts = [];
@@ -1015,13 +1039,11 @@ function goToCartStep(n) {
             dom.customerAddress.focus();
             return;
         }
-        // Se ainda não calculou o frete (shippingVal default ou erro), pede para calcular
-        if (state.shipping === 0 && state.distance === 0 && dom.shippingVal && !dom.shippingVal.textContent.includes('Grátis')) {
-            if (dom.shippingVal.textContent.includes('Aguardando') || dom.shippingVal.textContent.includes('Erro')) {
-                alert('Por favor, clique em "Calcular" no seu endereço antes de continuar.');
-                dom.customerAddress.focus();
-                return;
-            }
+        // Bloqueio rigoroso: Só permite ir para o pagamento se as coordenadas foram calculadas
+        if (!state.addressCoords && (!dom.shippingVal || !dom.shippingVal.textContent.includes('Grátis'))) {
+            alert('Por favor, informe seu endereço e clique em "Calcular" antes de prosseguir para o pagamento.');
+            if (dom.customerAddress) dom.customerAddress.focus();
+            return;
         }
     }
 

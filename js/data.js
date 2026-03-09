@@ -114,12 +114,22 @@ var REGULAR_COMBO_FRIES_OPTIONS = [
 ];
 
 var ADDON_OPTIONS = [
-    { id: 'bacon', name: 'Bacon extra', price: 2.00 },
     { id: 'carne', name: 'Carne extra', price: 2.00 },
     { id: 'ovo', name: 'Ovo extra', price: 2.00 },
-    { id: 'picles', name: 'Picles', price: 1.50 },
-    { id: 'queijo', name: 'Queijo', price: 1.90 },
-    { id: 'presunto', name: 'Presunto', price: 1.90 },
+    { id: 'picles', name: 'Picles extra', price: 1.50 },
+    { id: 'queijo', name: 'Queijo extra', price: 1.90 },
+    { id: 'presunto', name: 'Presunto extra', price: 1.50 },
+];
+
+// Adicionais para lanches Artesanais
+var ARTESANAIS_ADDON_OPTIONS = [
+    { id: 'art_picles', name: 'Picles', price: 1.50 },
+    { id: 'art_queijo', name: 'Queijo', price: 1.90 },
+    { id: 'art_presunto', name: 'Presunto', price: 1.90 },
+    { id: 'art_ovo', name: 'Ovo', price: 2.00 },
+    { id: 'art_bacon', name: 'Bacon', price: 3.00 },
+    { id: 'art_smash', name: 'Carne Smashada 80g', price: 6.50 },
+    { id: 'art_carne120', name: 'Carne 120g', price: 8.00 },
 ];
 
 // Configuração de Frete
