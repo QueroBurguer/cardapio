@@ -90,14 +90,36 @@ var REGULAR_COMBO_DRINK_OPTIONS = [
 
 ];
 
-var ADDON_OPTIONS = [
-    { id: 'cheddar', name: 'Cheddar extra', price: 2.00 },
-    { id: 'queijo', name: 'Queijo extra', price: 2.00 },
-    { id: 'ovo', name: 'Ovo', price: 2.00 },
-    { id: 'cebola', name: 'Cebola caramelizada', price: 2.50 },
-    { id: 'bacon', name: 'Bacon extra', price: 2.90 },
-    { id: 'carne', name: 'Carne extra', price: 2.90 },
+// Opções de Batata para Combos Especiais (Casal e Família 3)
+var COMBO_FRIES_OPTIONS = [
+    { id: 'fries_turbinada_300', name: 'Batata Turbinada 300g (Incluso)', price: 0.00 },
+    { id: 'fries_simples_300', name: 'Batata Simples 300g', price: 0.00 },
+    { id: 'fries_simples_600', name: 'Batata Simples 600g', price: 5.00 },
+    { id: 'fries_turbinada_600', name: 'Batata Turbinada 600g', price: 7.00 }
+];
 
+// Opções de Batata Específica para Combo Família 4
+var COMBO_FAMILIA4_FRIES_OPTIONS = [
+    { id: 'fries_turbinada_600_fam', name: 'Batata Turbinada 600g (Incluso)', price: 0.00 },
+    { id: 'fries_simples_600_fam', name: 'Batata Simples 600g', price: 0.00 }
+];
+
+// Opções de Batata para Combos Normais (Burguer, X-Salada, etc)
+var REGULAR_COMBO_FRIES_OPTIONS = [
+    { id: 'fries_simples_140', name: 'Batata Simples 140g (Incluso)', price: 0.00 },
+    { id: 'fries_simples_300', name: 'Batata Simples 300g', price: 9.90 },
+    { id: 'fries_turbinada_300', name: 'Batata Turbinada 300g', price: 11.00 },
+    { id: 'fries_simples_600', name: 'Batata Simples 600g', price: 16.00 },
+    { id: 'fries_turbinada_600', name: 'Batata Turbinada 600g', price: 19.90 }
+];
+
+var ADDON_OPTIONS = [
+    { id: 'bacon', name: 'Bacon extra', price: 2.00 },
+    { id: 'carne', name: 'Carne extra', price: 2.00 },
+    { id: 'ovo', name: 'Ovo extra', price: 2.00 },
+    { id: 'picles', name: 'Picles', price: 1.50 },
+    { id: 'queijo', name: 'Queijo', price: 1.90 },
+    { id: 'presunto', name: 'Presunto', price: 1.90 },
 ];
 
 // Configuração de Frete

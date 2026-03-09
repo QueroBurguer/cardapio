@@ -97,7 +97,7 @@
                     <div class="modalLabel">Dados de Entrega</div>
                     <div class="form-row">
                         <input id="customerName" placeholder="Seu Nome (Obrigatório)" required />
-                        <input id="customerPhone" placeholder="WhatsApp (Opcional)" inputmode="numeric" />
+                        <input id="customerPhone" placeholder="WhatsApp (Obrigatório)" inputmode="numeric" required />
                     </div>
                     <div class="form-row" style="grid-template-columns: 1fr auto; align-items:start">
                         <input id="customerAddress" placeholder="Endereço (Rua, Número, Bairro)" />
@@ -119,7 +119,7 @@
                 <div class="note">
                     <div class="modalLabel">Forma de Pagamento</div>
                     <select id="paymentMethod">
-                        <option value="Pix">Pagamento via Pix (Copia e Cola)</option>
+                        <option value="Pix">Pix (Chave com o Atendente)</option>
                         <option value="Dinheiro">Dinheiro</option>
                         <option value="Cartão (Crédito)">Cartão de Crédito</option>
                         <option value="Cartão (Débito)">Cartão de Débito</option>
@@ -127,13 +127,8 @@
 
                     <div id="pixCopySection" style="display:none; margin-bottom:16px;">
                         <div class="pix-box">
-                            <small>Chave Pix (CNPJ):</small>
-                            <div class="pix-key-row">
-                                <code id="pixKeyDisplay">62120634000135</code>
-                                <button id="copyPixBtn" class="chip">Copiar</button>
-                            </div>
-                            <p style="font-size:10px; color:var(--text-muted); margin-top:4px">Após o pagamento, envie o
-                                comprovante no WhatsApp.</p>
+                            <p style="font-size:12px; color:var(--text-muted); margin-top:4px">O pagamento via Pix será
+                                realizado diretamente com o atendente no WhatsApp.</p>
                         </div>
                     </div>
 
@@ -198,13 +193,19 @@
             <section class="modalRight" id="customizerSteps">
                 <!-- PASSO 1: PERSONALIZAÇÃO -->
                 <div class="custom-step active" id="customStepBasic">
+                    <div class="modalSection" id="friesSection" style="display:none">
+                        <div class="modalLabel">Escolha sua Batata</div>
+                        <div class="modalHint">Opcional - Selecione apenas 1</div>
+                        <div class="optionsGrid" id="friesOptions"></div>
+                    </div>
+
                     <div class="modalSection">
                         <div class="modalLabel">Escolha sua Bebida</div>
                         <div class="modalHint">Opcional - Selecione apenas 1</div>
                         <div class="optionsGrid" id="drinkOptions"></div>
                     </div>
 
-                    <div class="modalSection">
+                    <div class="modalSection" id="addonSection">
                         <div class="modalLabel">Turbine seu Lanche</div>
                         <div class="modalHint">Adicionais - Pode selecionar vários</div>
                         <div class="optionsGrid" id="addonOptions"></div>
@@ -234,7 +235,11 @@
                 <div class="modalHint" style="font-size:12px;margin-bottom:2px">Total a adicionar</div>
                 <div class="modalPrice" id="customItemPrice">R$ 0,00</div>
             </div>
-            <button class="btn whatsapp" type="button" id="customConfirmBtn">Confirmar e Adicionar</button>
+            <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
+                <button class="btn" type="button" id="customAddMoreBtn"
+                    style="flex: 1; background: var(--bg-hover); color: var(--text-primary);">+ Carrinho</button>
+                <button class="btn whatsapp" type="button" id="customConfirmBtn" style="flex: 1;">Finalizar</button>
+            </div>
         </div>
     </div>
 

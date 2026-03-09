@@ -115,12 +115,16 @@ const dom = {
     get customModal() { return getEl('customModal'); },
     get customTitle() { return getEl('customTitle'); },
     get customSub() { return getEl('customSub'); },
+    get friesBox() { return getEl('friesOptions'); },
+    get friesSection() { return document.getElementById('friesSection'); },
     get drinkBox() { return getEl('drinkOptions'); },
     get addonBox() { return getEl('addonOptions'); },
+    get addonSection() { return document.getElementById('addonSection'); },
     get itemNote() { return getEl('itemNote'); },
     get customItemPrice() { return getEl('customItemPrice'); },
     get customCloseBtn() { return getEl('customCloseBtn'); },
     get customConfirmBtn() { return getEl('customConfirmBtn'); },
+    get customAddMoreBtn() { return getEl('customAddMoreBtn'); },
     get modalProductImg() { return getEl('modalProductImg'); },
     get modalProductName() { return getEl('modalProductName'); },
     get modalProductDesc() { return getEl('modalProductDesc'); },
@@ -165,10 +169,12 @@ const customUI = {
     product: null,
     qty: 1,
     drinkId: null,
+    friesId: null,
     addonIds: new Set(),
     isSpecialCombo: false,
     isRegularCombo: false,
-    upsellPhase: 0 // 0: Basic, 1: Batata, 2: Bebida
+    upsellPhase: 0, // 0: Basic, 1: Batata, 2: Bebida
+    openCartAfter: false
 };
 
 // ========= FUNÇÕES DE RENDERIZAÇÃO =========
@@ -567,12 +573,15 @@ function setCustomOpen(open) {
         setTimeout(() => {
             if (!customUI.open) {
                 customUI.product = null;
+                customUI.openCartAfter = false;
                 dom.itemNote.value = '';
+                if (dom.friesBox) dom.friesBox.innerHTML = '';
                 dom.drinkBox.innerHTML = '';
                 dom.addonBox.innerHTML = '';
                 customUI.isSpecialCombo = false;
                 customUI.isRegularCombo = false;
                 customUI.drinkId = null;
+                customUI.friesId = null;
             }
         }, 200);
     }
@@ -582,6 +591,11 @@ function openCustomizer(product, qty = 1) {
     customUI.product = product;
     customUI.qty = qty;
     customUI.drinkId = null;
+
+    customUI.isSpecialCombo = ['combocasal', 'combofamilia1', 'combofamilia2'].includes(product.id);
+    customUI.isRegularCombo = ['comboburguer', 'comboxsalada', 'comboduplo', 'comboxtudo', 'combosmash'].includes(product.id);
+
+    customUI.friesId = customUI.isSpecialCombo ? 'fries_turbinada_300' : (customUI.isRegularCombo ? 'fries_simples_140' : null);
     customUI.addonIds.clear();
     customUI.itemNote = "";
     customUI.upsellPhase = 0; // Começa no básico (personalização)
@@ -589,20 +603,38 @@ function openCustomizer(product, qty = 1) {
     // UI RESET
     dom.customStepBasic.style.display = 'block';
     dom.upsellStep.style.display = 'none';
-    dom.customConfirmBtn.textContent = 'Avançar';
+    if (dom.customConfirmBtn) dom.customConfirmBtn.textContent = 'Finalizar';
+    if (dom.customAddMoreBtn) dom.customAddMoreBtn.style.display = 'block';
 
     dom.modalProductImg.src = product.image;
     dom.modalProductName.textContent = product.name;
     dom.modalProductDesc.textContent = product.desc || '';
     dom.customTitle.textContent = product.name;
 
-    customUI.isSpecialCombo = ['combocasal', 'combofamilia1', 'combofamilia2'].includes(product.id);
-    customUI.isRegularCombo = ['comboburguer', 'comboxsalada', 'comboduplo', 'comboxtudo', 'combosmash'].includes(product.id);
-
     let drinkOpts = [];
     if (customUI.isSpecialCombo) drinkOpts = COMBO_DRINK_OPTIONS;
     else if (customUI.isRegularCombo) drinkOpts = REGULAR_COMBO_DRINK_OPTIONS;
     else if ((product.category || '').toLowerCase().includes('lanches')) drinkOpts = DRINK_OPTIONS;
+
+    if (customUI.isSpecialCombo || customUI.isRegularCombo) {
+        if (dom.friesSection) dom.friesSection.style.display = 'block';
+        let friesOpts = COMBO_FRIES_OPTIONS;
+        if (product.id === 'combofamilia2') friesOpts = COMBO_FAMILIA4_FRIES_OPTIONS;
+        else if (customUI.isRegularCombo) friesOpts = REGULAR_COMBO_FRIES_OPTIONS;
+
+        // Ajuste no ID inicial caso seja Família 4
+        if (product.id === 'combofamilia2') customUI.friesId = 'fries_turbinada_600_fam';
+
+        renderOptionCards(dom.friesBox, friesOpts, 'fries');
+    } else {
+        if (dom.friesSection) dom.friesSection.style.display = 'none';
+    }
+
+    if (customUI.isSpecialCombo || product.category === 'Artesanais') {
+        if (dom.addonSection) dom.addonSection.style.display = 'none';
+    } else {
+        if (dom.addonSection) dom.addonSection.style.display = 'block';
+    }
 
     renderOptionCards(dom.drinkBox, drinkOpts, 'drink');
     renderOptionCards(dom.addonBox, ADDON_OPTIONS, 'addon');
@@ -622,18 +654,20 @@ function renderOptionCards(container, options, type) {
 
         const isChecked = (type === 'drink')
             ? (customUI.drinkId === opt.id)
-            : customUI.addonIds.has(opt.id);
+            : (type === 'fries')
+                ? (customUI.friesId === opt.id)
+                : customUI.addonIds.has(opt.id);
 
         if (isChecked) card.classList.add('active');
 
         card.innerHTML = `
         <div style="display:flex; gap:10px; align-items:center;">
-            <input type="${type === 'drink' ? 'radio' : 'checkbox'}" 
+            <input type="${(type === 'drink' || type === 'fries') ? 'radio' : 'checkbox'}" 
                 ${isChecked ? 'checked' : ''} 
                 style="pointer-events:none">
             <div>
             <div class="optionName">${opt.name}</div>
-            <div class="modalHint">${type === 'drink' ? 'Bebida' : 'Adicional'}</div>
+            <div class="modalHint">${type === 'drink' ? 'Bebida' : type === 'fries' ? 'Batata' : 'Adicional'}</div>
             </div>
         </div>
         <div class="optionPrice">+${formatBRL(opt.price)}</div>
@@ -642,6 +676,8 @@ function renderOptionCards(container, options, type) {
         card.onclick = () => {
             if (type === 'drink') {
                 customUI.drinkId = (customUI.drinkId === opt.id) ? null : opt.id;
+            } else if (type === 'fries') {
+                customUI.friesId = (customUI.friesId === opt.id) ? null : opt.id;
             } else {
                 if (customUI.addonIds.has(opt.id)) customUI.addonIds.delete(opt.id);
                 else customUI.addonIds.add(opt.id);
@@ -669,6 +705,15 @@ function updateCustomPrice() {
 
     if (drink) extras += drink.price;
 
+    if (customUI.isSpecialCombo || customUI.isRegularCombo) {
+        let friesOpts = COMBO_FRIES_OPTIONS;
+        if (customUI.product.id === 'combofamilia2') friesOpts = COMBO_FAMILIA4_FRIES_OPTIONS;
+        else if (customUI.isRegularCombo) friesOpts = REGULAR_COMBO_FRIES_OPTIONS;
+
+        const fries = friesOpts.find(f => f.id === customUI.friesId);
+        if (fries) extras += fries.price;
+    }
+
     customUI.addonIds.forEach(id => {
         const add = ADDON_OPTIONS.find(a => a.id === id);
         if (add) extras += add.price;
@@ -685,8 +730,9 @@ function handleUpsell() {
     if (customUI.upsellPhase === 1) {
         dom.customStepBasic.style.display = 'none';
         dom.upsellStep.style.display = 'block';
+        if (dom.customAddMoreBtn) dom.customAddMoreBtn.style.display = 'none';
         dom.upsellTitle.textContent = '🍟 Deseja adicionar uma Batata Frita 140g?';
-        dom.customConfirmBtn.textContent = 'Adicionar e Continuar';
+        if (dom.customConfirmBtn) dom.customConfirmBtn.textContent = 'Pular Oferta';
 
         const potato = PRODUCTS.find(p => p.id === 'batatam'); // Corrigido ID para 140g
         renderUpsellOption(potato);
@@ -694,7 +740,7 @@ function handleUpsell() {
     // Fase 2: Bebida
     else if (customUI.upsellPhase === 2) {
         dom.upsellTitle.textContent = '🥤 E uma Bebida gelada para acompanhar?';
-        dom.customConfirmBtn.textContent = 'Finalizar e Adicionar';
+        if (dom.customConfirmBtn) dom.customConfirmBtn.textContent = 'Finalizar Compra';
 
         const drink = PRODUCTS.find(p => p.id === 'guaramor');
         renderUpsellOption(drink);
@@ -759,11 +805,22 @@ function finishOrder() {
     else if (customUI.isRegularCombo) drinkList = REGULAR_COMBO_DRINK_OPTIONS;
 
     const drink = drinkList.find(d => d.id === customUI.drinkId);
+
+    let fries = null;
+    if (customUI.isSpecialCombo || customUI.isRegularCombo) {
+        let friesOpts = COMBO_FRIES_OPTIONS;
+        if (customUI.product.id === 'combofamilia2') friesOpts = COMBO_FAMILIA4_FRIES_OPTIONS;
+        else if (customUI.isRegularCombo) friesOpts = REGULAR_COMBO_FRIES_OPTIONS;
+
+        fries = friesOpts.find(f => f.id === customUI.friesId);
+    }
+
     const addons = ADDON_OPTIONS.filter(a => customUI.addonIds.has(a.id));
 
     let finalName = customUI.product.name;
     const parts = [];
     if (drink) parts.push(`Bebida: ${drink.name}`);
+    if (fries) parts.push(`Batata: ${fries.name}`);
     if (addons.length > 0) parts.push(`Add: ${addons.map(a => a.name).join(', ')}`);
     const note = dom.itemNote.value.trim();
     if (note) parts.push(`Obs: ${note}`);
@@ -774,12 +831,14 @@ function finishOrder() {
 
     const meta = {
         drink: drink ? drink.name : null,
+        fries: fries ? fries.name : null,
         addons: addons.map(a => a.name),
         note: note
     };
 
     let totalUnit = base;
     if (drink) totalUnit += drink.price;
+    if (fries) totalUnit += fries.price;
     addons.forEach(a => totalUnit += a.price);
 
     // Adiciona o item base customizado
@@ -795,18 +854,17 @@ function finishOrder() {
     renderCart();
     showToast(`${customUI.qty}x ${customUI.product.name} adicionado!`);
     setCustomOpen(false);
-    if (isMobile()) setCartOpen(true);
+    if (customUI.openCartAfter) {
+        if (isMobile()) setCartOpen(true);
+        goToCartStep(2);
+    }
 }
 
 // Função de confirmação do modal
-function handleConfirm() {
+function handleConfirm(openCart = false) {
     if (!customUI.product) return;
-    if (customUI.upsellPhase === 0) {
-        customUI.upsellPhase = 1;
-        handleUpsell();
-    } else {
-        finishOrder();
-    }
+    customUI.openCartAfter = openCart;
+    finishOrder();
 }
 
 function handleOverlayClick() {
@@ -855,7 +913,7 @@ function buildWhatsAppText() {
     lines.push(`📱 *Tel:* ${c.phone}`);
     lines.push(`📍 *Endereço:* ${c.address}`);
     lines.push(`💳 *Pagamento:* ${c.pay}`);
-    if (c.pay === 'Pix') lines.push(`_(Pagamento realizado via chave Pix da loja)_`);
+    if (c.pay === 'Pix') lines.push(`_(Aguardando chave Pix do atendente)_`);
     if (c.obs !== 'Sem observação') lines.push(`📝 *Obs Geral:* ${c.obs}`);
 
     return encodeURIComponent(lines.join('\n'));
@@ -919,6 +977,37 @@ function handleClearCart() {
 
 // ========= NAVEGAÇÃO CARRINHO =========
 function goToCartStep(n) {
+    if (n === 3) {
+        // Validação estrita
+        const name = dom.customerName ? dom.customerName.value.trim() : '';
+        const phone = dom.customerPhone ? dom.customerPhone.value.trim() : '';
+        const address = dom.customerAddress ? dom.customerAddress.value.trim() : '';
+
+        if (!name) {
+            alert('Por favor, informe seu Nome Completo.');
+            dom.customerName.focus();
+            return;
+        }
+        if (!phone) {
+            alert('Por favor, informe seu número de WhatsApp para contato.');
+            dom.customerPhone.focus();
+            return;
+        }
+        if (!address || address.length < 5) {
+            alert('Por favor, informe e calcule seu Endereço (Rua, Número, Bairro) antes de prosseguir.');
+            dom.customerAddress.focus();
+            return;
+        }
+        // Se ainda não calculou o frete (shippingVal default ou erro), pede para calcular
+        if (state.shipping === 0 && state.distance === 0 && dom.shippingVal && !dom.shippingVal.textContent.includes('Grátis')) {
+            if (dom.shippingVal.textContent.includes('Aguardando') || dom.shippingVal.textContent.includes('Erro')) {
+                alert('Por favor, clique em "Calcular" no seu endereço antes de continuar.');
+                dom.customerAddress.focus();
+                return;
+            }
+        }
+    }
+
     state.cartStep = n;
     [dom.cartStep1, dom.cartStep2, dom.cartStep3].forEach((el, i) => {
         if (el) el.classList.toggle('active', i === n - 1);
@@ -988,7 +1077,8 @@ function init() {
         if (dom.overlay) dom.overlay.onclick = handleOverlayClick;
 
         // Modal
-        if (dom.customConfirmBtn) dom.customConfirmBtn.onclick = handleConfirm;
+        if (dom.customConfirmBtn) dom.customConfirmBtn.onclick = () => handleConfirm(true);
+        if (dom.customAddMoreBtn) dom.customAddMoreBtn.onclick = () => handleConfirm(false);
         if (dom.customCloseBtn) dom.customCloseBtn.onclick = () => setCustomOpen(false);
 
         // Mobile Cart Toggle
