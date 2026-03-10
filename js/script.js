@@ -977,7 +977,10 @@ async function recordSaleLocally() {
         // Dispara pra API dando o sinal q a venda finalizou
         await fetch('http://localhost:3000/api/sales', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'x-api-key': '11437152c73b41328dc9c2dda294b42d'
+            },
             body: JSON.stringify(payload)
         });
         console.log('Venda gravada para o Painel logístico!');
