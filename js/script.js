@@ -10,6 +10,20 @@ const WHATSAPP_PHONE = '5521992497289';
 const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 const API_BASE_URL = isLocal ? 'http://localhost:3000' : 'https://freakish-overgenially-anette.ngrok-free.dev';
 
+// =========================================================
+// INTERCEPTADOR DE FETCH (Pula a tela de aviso do Ngrok Free)
+// =========================================================
+const originalFetch = window.fetch;
+window.fetch = function () {
+    let [resource, config] = arguments;
+    if (typeof resource === 'string' && resource.startsWith(API_BASE_URL)) {
+        config = config || {};
+        config.headers = config.headers || {};
+        config.headers['ngrok-skip-browser-warning'] = '69420';
+    }
+    return originalFetch(resource, config);
+};
+// =========================================================
 
 // ========= INTEGRAÇÃO COM SISTEMA DE ESTOQUE =========
 async function loadConfigs() {
