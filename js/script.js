@@ -7,7 +7,9 @@ const WHATSAPP_PHONE = '5521992497289';
 // Para uso com TÚNEL PÚBLICO (internet), troque para o link gerado pelo TUNNEL-PUBLICO.bat
 //   const API_BASE_URL = 'https://SEU-LINK.loca.lt';
 // =========================================================
-const API_BASE_URL = 'http://localhost:3000';
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE_URL = isLocal ? 'http://localhost:3000' : 'https://freakish-overgenially-anette.ngrok-free.dev';
+
 
 // ========= INTEGRAÇÃO COM SISTEMA DE ESTOQUE =========
 async function loadConfigs() {
@@ -975,7 +977,7 @@ async function recordSaleLocally() {
         };
 
         // Dispara pra API dando o sinal q a venda finalizou
-        await fetch('http://localhost:3000/api/sales', {
+        await fetch(`${API_BASE_URL}/api/sales`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1161,7 +1163,7 @@ document.addEventListener('input', (e) => {
 
 async function checkLoyalty(phone) {
     try {
-        const res = await fetch(`http://localhost:3000/api/loyalty/${phone}`);
+        const res = await fetch(`${API_BASE_URL}/api/loyalty/${phone}`);
         const data = await res.json();
         const ls = document.getElementById('loyaltySection');
         const lm = document.getElementById('loyaltyMsg');
