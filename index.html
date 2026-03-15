@@ -94,26 +94,47 @@
             <!-- Passo 2: ENTREGA -->
             <div id="cartStep2" class="cart-step">
                 <div class="note">
-                    <div class="modalLabel">Dados de Entrega</div>
+                    <div class="modalLabel">Forma de Entrega</div>
+                    <div class="form-row" style="margin-bottom: 15px;">
+                        <label class="optionCard active" id="typeDeliveryLabel" style="flex:1; cursor:pointer; padding: 10px; margin-bottom: 0;">
+                            <input type="radio" name="orderType" value="delivery" checked style="margin-right: 8px;"> 🛵 Entrega
+                        </label>
+                        <label class="optionCard" id="typePickupLabel" style="flex:1; cursor:pointer; padding: 10px; margin-bottom: 0;">
+                            <input type="radio" name="orderType" value="pickup" style="margin-right: 8px;"> 🥡 Retirada
+                        </label>
+                    </div>
+
+                    <div id="deliveryFields">
+                        <div class="modalLabel">Dados de Entrega</div>
+                        <div class="form-row" style="grid-template-columns: 1fr auto; align-items:start">
+                            <input id="customerAddress" placeholder="Endereço (Rua, Número, Bairro)" />
+                            <button type="button" class="btn" id="calcShippingBtn">Calcular</button>
+                        </div>
+                        <div class="delivery-info">
+                            <span id="distanceVal"></span>
+                            <span id="shippingVal">Aguardando endereço...</span>
+                        </div>
+                    </div>
+
+                    <div id="pickupFields" style="display:none; padding:15px; background:rgba(255,255,255,0.05); border-radius:10px; border:1px dashed #444; margin-bottom: 15px;">
+                        <div style="font-size:13px; color:var(--accent); font-weight:bold; text-align:center;">
+                            📍 RETIRADA NA LOJA<br>
+                            <span style="font-size:11px; font-weight:normal; color:#aaa;">O endereço da loja será enviado no WhatsApp após a confirmação.</span>
+                        </div>
+                    </div>
+
+                    <div class="modalLabel">Dados do Cliente</div>
                     <div class="form-row">
                         <input id="customerName" placeholder="Seu Nome (Obrigatório)" required />
                         <input id="customerPhone" placeholder="WhatsApp (Obrigatório)" inputmode="numeric" required />
                     </div>
-                    <div id="loyaltySection" class="loyalty-card">
+                    <div id="loyaltySection" class="loyalty-card" style="display:none;">
                         <div style="font-size:12px; color:#9b5de5; font-weight:bold" id="loyaltyMsg">Você tem 0 pedidos!
                         </div>
                         <div class="loyalty-bar-bg">
                             <div id="loyaltyFill" class="loyalty-bar-fill"></div>
                         </div>
                         <div style="font-size:10px; color:#777; margin-top:4px">Ganhe um brinde a cada 5 pedidos.</div>
-                    </div>
-                    <div class="form-row" style="grid-template-columns: 1fr auto; align-items:start">
-                        <input id="customerAddress" placeholder="Endereço (Rua, Número, Bairro)" />
-                        <button type="button" class="btn" id="calcShippingBtn">Calcular</button>
-                    </div>
-                    <div class="delivery-info">
-                        <span id="distanceVal"></span>
-                        <span id="shippingVal">Aguardando endereço...</span>
                     </div>
                 </div>
                 <div class="cart-actions-step">
