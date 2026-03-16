@@ -706,7 +706,7 @@ function openCustomizer(product, qty = 1) {
     let drinkOpts = [];
     if (customUI.isSpecialCombo) drinkOpts = COMBO_DRINK_OPTIONS;
     else if (customUI.isRegularCombo) drinkOpts = REGULAR_COMBO_DRINK_OPTIONS;
-    else if ((product.category || '').toLowerCase().includes('lanches')) drinkOpts = DRINK_OPTIONS;
+    else if ((product.category || '').toLowerCase().includes('lanches') || product.category === 'Artesanais' || product.category === 'Tradicionais') drinkOpts = DRINK_OPTIONS;
 
     if (customUI.isSpecialCombo || customUI.isRegularCombo) {
         if (dom.friesSection) dom.friesSection.style.display = 'block';

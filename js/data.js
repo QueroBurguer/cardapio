@@ -58,9 +58,9 @@ var PRODUCTS = [
 ];
 
 var DRINK_OPTIONS = [
-    { id: 'guaramor', name: 'Guaramor 300ml', price: 2.90 },
+    { id: 'guaramor', name: 'Guaramor 250ml', price: 2.90 },
     { id: 'fantauva_lata', name: 'Fanta Uva Lata 350ml', price: 6.00 },
-    { id: 'coca_lata', name: 'Coca-Cola Lata 350ml', price: 5.90 },
+    { id: 'coca_lata', name: 'Coca-Cola Lata 350ml', price: 6.00 },
     { id: 'coca_zero_lata', name: 'Coca-Cola Zero Lata 350ml', price: 6.00 },
     { id: 'flexa_guarana', name: 'Flexa Guaraná', price: 7.90 },
     { id: 'coca_15l', name: 'Coca-Cola 1.5L', price: 9.90 },
