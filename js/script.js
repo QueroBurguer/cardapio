@@ -70,7 +70,8 @@ const state = {
     shipping: 0,
     distance: 0,
     addressCoords: null,
-    cartStep: 1
+    cartStep: 1,
+    isPickup: false
 };
 
 // ========= UTILITÁRIOS =========
@@ -84,11 +85,27 @@ const slugify = (text) => text.toString().toLowerCase().trim()
     .replace(/[^\w-]+/g, '')
     .replace(/--+/g, '-');
 
+const getWeekdayDiscount = (productId) => {
+    const day = new Date().getDay(); // 0=Dom, 1=Seg...
+    const isMonToThu = day >= 1 && day <= 4;
+    const targets = ['combocasal', 'combofamilia1', 'combofamilia2'];
+    return (isMonToThu && targets.includes(productId)) ? 0.20 : 0;
+};
+
 const getEffectivePrice = (p) => {
     let price = p.promoPrice || p.price;
+    
+    // Desconto fixo da loja (se houver)
     if (STORE_CONFIG.globalDiscountPercentage > 0) {
         price = price * (1 - (STORE_CONFIG.globalDiscountPercentage / 100));
     }
+    
+    // Desconto de Seg-Qui para os Combos Específicos
+    const weekdayDiscount = getWeekdayDiscount(p.id);
+    if (weekdayDiscount > 0) {
+        price = price * (1 - weekdayDiscount);
+    }
+    
     return price;
 };
 
@@ -191,8 +208,14 @@ const dom = {
     get loyaltySection() { return getEl('loyaltySection'); },
     get loyaltyMsg() { return getEl('loyaltyMsg'); },
     get loyaltyFill() { return getEl('loyaltyFill'); },
-    get etaVal() { return getEl('etaVal'); },
-    get etaRow() { return getEl('etaRow'); }
+    get etaRow() { return getEl('etaRow'); },
+
+    // Order Type Selection
+    get orderTypeRadios() { return document.getElementsByName('orderType'); },
+    get deliveryFields() { return getEl('deliveryFields'); },
+    get pickupFields() { return getEl('pickupFields'); },
+    get typeDeliveryLabel() { return getEl('typeDeliveryLabel'); },
+    get typePickupLabel() { return getEl('typePickupLabel'); }
 };
 
 // ========= CUSTOM UI STATE =========
@@ -274,22 +297,33 @@ function productCard(p) {
     card.tabIndex = 0; // Acessibilidade
 
     const effectivePrice = getEffectivePrice(p);
-    const hasDiscount = effectivePrice < p.price;
+    const hasWeekdayDiscount = getWeekdayDiscount(p.id) > 0;
+    const originalPrice = p.promoPrice || p.price;
+
+    let priceHtml = `<div class="price">${formatBRL(effectivePrice)}</div>`;
+    if (hasWeekdayDiscount || (p.promoPrice && p.promoPrice < p.price)) {
+        priceHtml = `
+            <div class="priceCol">
+                <span class="oldPrice">${formatBRL(originalPrice)}</span>
+                <span class="price">${formatBRL(effectivePrice)}</span>
+            </div>
+        `;
+    }
 
     card.innerHTML = `
+    ${hasWeekdayDiscount ? '<div class="promo-badge">PROMO 20% OFF</div>' : ''}
     <img class="thumb" src="${p.image}" alt="${p.name}" loading="lazy">
     <div class="pad">
       <h4 class="title">${p.name}</h4>
       <p class="desc">${p.desc || ''}</p>
       <div class="priceRow">
         <div class="priceCol">
-          ${hasDiscount ? `<span class="oldPrice">${formatBRL(p.price)}</span>` : ''}
-          <span class="price">${formatBRL(effectivePrice)}</span>
+          ${priceHtml}
         </div>
         <div class="qty">
           <button type="button" class="minus" aria-label="Diminuir">−</button>
           <input type="number" min="1" value="1" aria-label="Quantidade" readonly/>
-          <button type="button" class="plus" aria="Aumentar">+</button>
+          <button type="button" class="plus" aria-label="Aumentar">+</button>
         </div>
       </div>
     </div>
@@ -449,9 +483,22 @@ function renderCart() {
     state.cart.forEach(it => {
         const line = document.createElement('div');
         line.className = 'line';
+        let detailsHtml = '';
+        if (it.meta) {
+            const parts = [];
+            if (it.meta.drink) parts.push(`🥤 ${it.meta.drink}`);
+            if (it.meta.fries) parts.push(`🍟 ${it.meta.fries}`);
+            if (it.meta.addons && it.meta.addons.length > 0) parts.push(`➕ ${it.meta.addons.join(', ')}`);
+            if (it.meta.note) parts.push(`📝 ${it.meta.note}`);
+            if (parts.length > 0) {
+                detailsHtml = `<div class="details" style="font-size: 11px; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">${parts.join('<br>')}</div>`;
+            }
+        }
+
         line.innerHTML = `
         <div>
             <div class="name">${it.name}</div>
+            ${detailsHtml}
             <div class="unit">${formatBRL(it.price)}</div>
         </div>
         <div class="subtotal">${formatBRL(it.price * it.qty)}</div>
@@ -471,14 +518,21 @@ function renderCart() {
     });
 
     const subtotal = state.cart.reduce((s, i) => s + (i.price * i.qty), 0);
+    
+    // Se for retirada, zera frete e distância
+    if (state.isPickup) {
+        state.shipping = 0;
+        state.distance = 0;
+    }
+
     const total = subtotal + (state.shipping || 0);
 
     if (dom.subtotalVal) dom.subtotalVal.textContent = formatBRL(subtotal);
     if (dom.subtotalStep1) dom.subtotalStep1.textContent = formatBRL(subtotal);
 
-    dom.shippingVal.textContent = state.shipping > 0 ? formatBRL(state.shipping) : (state.distance > 0 ? 'Frete Grátis' : '--');
+    dom.shippingVal.textContent = state.isPickup ? 'Retirada na Loja (Grátis)' : (state.shipping > 0 ? formatBRL(state.shipping) : (state.distance > 0 ? 'Frete Grátis' : '--'));
     if (dom.shippingValTotal) dom.shippingValTotal.textContent = dom.shippingVal.textContent;
-    dom.totalDisplay.textContent = formatBRL(subtotal + state.shipping);
+    dom.totalDisplay.textContent = formatBRL(subtotal + (state.shipping || 0));
 
     // Cálculo de ETA
     const prepTime = 20; // 20 min base
@@ -870,21 +924,12 @@ function finishOrder() {
     const allAddonsList = [...ADDON_OPTIONS, ...ARTESANAIS_ADDON_OPTIONS];
     const addons = allAddonsList.filter(a => customUI.addonIds.has(a.id));
 
-    let finalName = customUI.product.name;
-    const parts = [];
-    if (drink) parts.push(`Bebida: ${drink.name}`);
-    if (fries) parts.push(`Batata: ${fries.name}`);
-    if (addons.length > 0) parts.push(`Add: ${addons.map(a => a.name).join(', ')}`);
-    const note = dom.itemNote.value.trim();
-    if (note) parts.push(`Obs: ${note}`);
-
-    if (parts.length > 0) {
-        finalName += ` (${parts.join(' • ')})`;
-    }
-
+    const note = dom.itemNote ? dom.itemNote.value.trim() : '';
     const meta = {
+        cleanName: customUI.product.name,
         drink: drink ? drink.name : null,
         fries: fries ? fries.name : null,
+        addonsCount: addons.length,
         addons: addons.map(a => a.name),
         note: note
     };
@@ -898,7 +943,7 @@ function finishOrder() {
     state.cart.push({
         id: `${customUI.product.id}_${Date.now()}`,
         baseId: customUI.product.id,
-        name: finalName,
+        name: customUI.product.name,
         price: totalUnit,
         qty: customUI.qty,
         meta: meta
@@ -930,9 +975,10 @@ function getCustomerFields() {
     return {
         name: dom.customerName ? (dom.customerName.value.trim() || 'Não informado') : 'Não informado',
         phone: dom.customerPhone ? (normalizeDigits(dom.customerPhone.value) || 'Não informado') : 'Não informado',
-        address: dom.customerAddress ? (dom.customerAddress.value.trim() || 'Não informado') : 'Não informado',
+        address: state.isPickup ? 'RETIRADA NA LOJA' : (dom.customerAddress ? (dom.customerAddress.value.trim() || 'Não informado') : 'Não informado'),
         pay: dom.paymentMethod ? dom.paymentMethod.value : 'Pix',
-        obs: dom.noteText ? (dom.noteText.value.trim() || 'Sem observação') : 'Sem observação'
+        obs: dom.noteText ? (dom.noteText.value.trim() || 'Sem observação') : 'Sem observação',
+        isPickup: state.isPickup
     };
 }
 
@@ -943,6 +989,14 @@ function buildWhatsAppText() {
 
     state.cart.forEach(i => {
         lines.push(`• ${i.qty}x ${i.name}`);
+        if (i.meta) {
+            if (i.meta.drink) lines.push(`  - Bebida: ${i.meta.drink}`);
+            if (i.meta.fries) lines.push(`  - Batata: ${i.meta.fries}`);
+            if (i.meta.addons && i.meta.addons.length > 0) {
+                lines.push(`  - Adicionais: ${i.meta.addons.join(', ')}`);
+            }
+            if (i.meta.note) lines.push(`  - Obs: ${i.meta.note}`);
+        }
         lines.push(`  Valor: ${formatBRL(i.price * i.qty)}`);
     });
 
@@ -952,7 +1006,9 @@ function buildWhatsAppText() {
     const shipping = state.shipping || 0;
     lines.push(`Subtotal: ${formatBRL(subtotal)}`);
 
-    if (shipping > 0) {
+    if (state.isPickup) {
+        lines.push(`Entrega: GRATIS (Retirada)`);
+    } else if (shipping > 0) {
         lines.push(`Entrega (${state.distance.toFixed(1)}km): ${formatBRL(shipping)}`);
     } else if (state.distance > 0) {
         lines.push(`Entrega: Grátis`);
@@ -964,9 +1020,20 @@ function buildWhatsAppText() {
     lines.push('');
     lines.push(`👤 *Cliente:* ${c.name}`);
     lines.push(`📱 *Tel:* ${c.phone}`);
-    lines.push(`📍 *Endereço:* ${c.address}`);
+    if (c.isPickup) {
+        lines.push(`🥡 *TIPO: RETIRADA NA LOJA*`);
+    } else {
+        lines.push(`📍 *Endereço:* ${c.address}`);
+    }
     lines.push(`💳 *Pagamento:* ${c.pay}`);
     if (c.pay === 'Pix') lines.push(`_(Aguardando chave Pix do atendente)_`);
+    
+    const hasAnyWeekdayDiscount = state.cart.some(item => getWeekdayDiscount(item.id) > 0);
+    if (hasAnyWeekdayDiscount) {
+        lines.push('');
+        lines.push(`🏷️ _Desconto de 20% aplicado nos combos selecionados (Seg a Qui)!_`);
+    }
+
     if (c.obs !== 'Sem observação') lines.push(`📝 *Obs Geral:* ${c.obs}`);
 
     if (state.addressCoords) {
@@ -1053,16 +1120,19 @@ function goToCartStep(n) {
             dom.customerPhone.focus();
             return;
         }
-        if (!address || address.length < 5) {
-            alert('Por favor, informe e calcule seu Endereço (Rua, Número, Bairro) antes de prosseguir.');
-            dom.customerAddress.focus();
-            return;
-        }
-        // Bloqueio rigoroso: Só permite ir para o pagamento se as coordenadas foram calculadas
-        if (!state.addressCoords && (!dom.shippingVal || !dom.shippingVal.textContent.includes('Grátis'))) {
-            alert('Por favor, informe seu endereço e clique em "Calcular" antes de prosseguir para o pagamento.');
-            if (dom.customerAddress) dom.customerAddress.focus();
-            return;
+
+        if (!state.isPickup) {
+            if (!address || address.length < 5) {
+                alert('Por favor, informe e calcule seu Endereço (Rua, Número, Bairro) antes de prosseguir.');
+                dom.customerAddress.focus();
+                return;
+            }
+            // Bloqueio rigoroso: Só permite ir para o pagamento se as coordenadas foram calculadas
+            if (!state.addressCoords && (!dom.shippingVal || !dom.shippingVal.textContent.includes('Grátis'))) {
+                alert('Por favor, informe seu endereço e clique em "Calcular" antes de prosseguir para o pagamento.');
+                if (dom.customerAddress) dom.customerAddress.focus();
+                return;
+            }
         }
     }
 
@@ -1142,6 +1212,23 @@ function init() {
         // Mobile Cart Toggle
         if (dom.fabCart) dom.fabCart.onclick = () => setCartOpen(true);
         if (dom.toggleCartBtn) dom.toggleCartBtn.onclick = () => setCartOpen(false);
+
+        // Order Type Selection
+        if (dom.orderTypeRadios) {
+            dom.orderTypeRadios.forEach(radio => {
+                radio.onchange = (e) => {
+                    state.isPickup = e.target.value === 'pickup';
+                    if (dom.deliveryFields) dom.deliveryFields.style.display = state.isPickup ? 'none' : 'block';
+                    if (dom.pickupFields) dom.pickupFields.style.display = state.isPickup ? 'block' : 'none';
+                    
+                    // Update classes for visual feedback
+                    if (dom.typeDeliveryLabel) dom.typeDeliveryLabel.classList.toggle('active', !state.isPickup);
+                    if (dom.typePickupLabel) dom.typePickupLabel.classList.toggle('active', state.isPickup);
+                    
+                    renderCart();
+                };
+            });
+        }
 
         renderCategories();
         renderProducts();

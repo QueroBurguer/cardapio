@@ -413,6 +413,31 @@ header {
     transform: translateY(-1px) scale(0.99);
 }
 
+.promo-badge, .featured-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 800;
+    z-index: 10;
+    box-shadow: var(--shadow-sm);
+    text-transform: uppercase;
+}
+
+.promo-badge {
+    background: var(--danger);
+    color: #fff;
+}
+
+.featured-badge {
+    background: var(--primary);
+    color: var(--primary-contrast);
+    left: auto;
+    right: 10px;
+}
+
 .card:focus-visible {
     outline: 3px solid var(--primary);
     outline-offset: 2px;
