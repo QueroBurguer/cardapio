@@ -33,9 +33,9 @@ var PRODUCTS = [
     { id: 'comboxsalada', name: 'Combo X-Salada', price: 16.50, category: 'Combos', desc: '1 X-Salada + Batata Frita + Guaramor.', image: 'images/QueroComboXSalada.jpg' },
     { id: 'comboduplo', name: 'Combo Burguer Duplo', price: 18.90, category: 'Combos', desc: '1 Hamburguer Duplo + Batata Frita + Guaramor.', image: 'images/QueroComboBurguerDuplo.jpg' },
     { id: 'comboxtudo', name: 'Combo X-Tudo', price: 19.90, category: 'Combos', featured: true, desc: '1 X-Tudo + Batata Frita + Guaramor.', image: 'images/QueroComboXTudo.jpg' },
-    { id: 'combocasal', name: 'Combo Casal', price: 53.80, promoPrice: 44.90, category: 'Combos', featured: true, desc: '2 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/ComboCasal.png' },
-    { id: 'combofamilia1', name: 'Combo Família 3', price: 67.30, promoPrice: 58.50, category: 'Combos', featured: true, desc: '3 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/ComboFamilia3.png' },
-    { id: 'combofamilia2', name: 'Combo Família 4', price: 87.90, promoPrice: 69.90, category: 'Combos', featured: true, desc: '4 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/ComboFamilia4.png' },
+    { id: 'combocasal', name: 'Combo Casal', price: 53.80, promoPrice: 39.90, category: 'Combos', featured: true, desc: '2 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/ComboCasal.png' },
+    { id: 'combofamilia1', name: 'Combo Família 3', price: 67.30, promoPrice: 48.50, category: 'Combos', featured: true, desc: '3 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/ComboFamilia3.png' },
+    { id: 'combofamilia2', name: 'Combo Família 4', price: 87.90, promoPrice: 59.90, category: 'Combos', featured: true, desc: '4 X-Tudo + Batata Turbinada + Refrigerante Flexa 2L.', image: 'images/ComboFamilia4.png' },
 
     // ========= ACOMPANHAMENTOS =========
     { id: 'batatap', name: 'Batata Frita 140g', price: 7.90, category: 'Acompanhamentos', desc: 'Batata frita crocante, porção generosa.', image: 'images/QueroBatataFrita.jpg' },
