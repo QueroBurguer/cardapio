@@ -89,7 +89,7 @@ const getWeekdayDiscount = (productId) => {
     const day = new Date().getDay(); // 0=Dom, 1=Seg...
     const isMonToThu = day >= 1 && day <= 4;
     const targets = ['combocasal', 'combofamilia1', 'combofamilia2'];
-    return (isMonToThu && targets.includes(productId)) ? 0.15 : 0;
+    return (isMonToThu && targets.includes(productId)) ? 0.20 : 0;
 };
 
 const getEffectivePrice = (p) => {
