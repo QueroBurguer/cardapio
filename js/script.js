@@ -88,7 +88,7 @@ const slugify = (text) => text.toString().toLowerCase().trim()
 const getWeekdayDiscount = (productId) => {
     const day = new Date().getDay(); // 0=Dom, 1=Seg...
     const isMonToThu = day >= 1 && day <= 4;
-    const targets = ['combocasal', 'combofamilia1', 'combofamilia2'];
+    const targets = []; // Removido por solicitação (os preços promocionais já são finais)
     return (isMonToThu && targets.includes(productId)) ? 0.20 : 0;
 };
 
@@ -298,7 +298,7 @@ function productCard(p) {
 
     const effectivePrice = getEffectivePrice(p);
     const hasWeekdayDiscount = getWeekdayDiscount(p.id) > 0;
-    const originalPrice = p.promoPrice || p.price;
+    const originalPrice = p.price;
 
     let priceHtml = `<div class="price">${formatBRL(effectivePrice)}</div>`;
     if (hasWeekdayDiscount || (p.promoPrice && p.promoPrice < p.price)) {
